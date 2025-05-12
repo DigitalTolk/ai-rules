@@ -40,19 +40,19 @@ Each knowledge entry belongs to a specific user and is automatically deleted if 
 
 The knowledge base functionality is implemented in:
 
-- `apps/web/app/(app)/automation/knowledge/KnowledgeBase.tsx` - Main UI component
-- `apps/web/app/(app)/automation/knowledge/KnowledgeForm.tsx` - Form for creating/editing entries
-- `apps/web/utils/actions/knowledge.ts` - Server actions for CRUD operations
-- `apps/web/utils/actions/knowledge.validation.ts` - Zod validation schemas
-- `apps/web/app/api/knowledge/route.ts` - API route for fetching entries
+- `app/(app)/automation/knowledge/KnowledgeBase.tsx` - Main UI component
+- `app/(app)/automation/knowledge/KnowledgeForm.tsx` - Form for creating/editing entries
+- `utils/actions/knowledge.ts` - Server actions for CRUD operations
+- `utils/actions/knowledge.validation.ts` - Zod validation schemas
+- `app/api/knowledge/route.ts` - API route for fetching entries
 
 ### AI Integration Files
 
-- `apps/web/utils/ai/knowledge/extract.ts` - Extract relevant knowledge from knowledge base entries
-- `apps/web/utils/ai/knowledge/extract-from-email-history.ts` - Extract context from previous emails
-- `apps/web/utils/ai/reply/draft-with-knowledge.ts` - Generate email drafts using extracted knowledge
-- `apps/web/utils/reply-tracker/generate-draft.ts` - Coordinates the extraction and drafting process
-- `apps/web/utils/llms/model-selector.ts` - Economy LLM selection for high-volume tasks
+- `utils/ai/knowledge/extract.ts` - Extract relevant knowledge from knowledge base entries
+- `utils/ai/knowledge/extract-from-email-history.ts` - Extract context from previous emails
+- `utils/ai/reply/draft-with-knowledge.ts` - Generate email drafts using extracted knowledge
+- `utils/reply-tracker/generate-draft.ts` - Coordinates the extraction and drafting process
+- `utils/llms/model-selector.ts` - Economy LLM selection for high-volume tasks
 
 ## Features
 

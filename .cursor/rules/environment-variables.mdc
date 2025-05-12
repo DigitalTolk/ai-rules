@@ -12,7 +12,7 @@ This is how we add environment variables to the project:
       NEW_VARIABLE=value_example
       ```
 
-  2. Add to `apps/web/env.ts`:
+  2. Add to `env.ts`:
       ```typescript
       // For server-only variables
       server: {
@@ -81,6 +81,6 @@ examples:
     output: "Client-side environment variable properly added"
 
 references:
-  - apps/web/env.ts
-  - apps/web/.env.example
+  - env.ts
+  - .env.example
   - turbo.json

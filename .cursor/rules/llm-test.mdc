@@ -9,10 +9,10 @@ Tests for LLM-related functionality should follow these guidelines to ensure con
 
 ## Test File Structure
 
-1. Place all LLM-related tests in `apps/web/__tests__/`:
+1. Place all LLM-related tests in `__tests__/`:
 
    ```
-   apps/web/__tests__/
+   __tests__/
    │ └── your-feature.test.ts
    │ └── another-feature.test.ts
    └── ...

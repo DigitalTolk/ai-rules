@@ -17,7 +17,7 @@ Currently we only support Gmail.
 ## Directory Structure
 
 ```
-apps/web/utils/
+utils/
 ├── gmail/           # Gmail-specific implementations
 │   ├── message.ts   # Message operations (get, list, batch, etc.)
 │   ├── thread.ts    # Thread operations

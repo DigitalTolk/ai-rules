@@ -17,12 +17,12 @@ Once the cleaning process has started we show the emails streamed in with the ac
 
 The main files and directories for this are:
 
-- apps/web/utils/actions/clean.ts
-- apps/web/app/api/clean/
-- apps/web/app/(app)/clean/page.tsx
-- apps/web/app/(app)/clean/
-- apps/web/prisma/schema.prisma
-- apps/web/utils/redis/clean.ts
+- utils/actions/clean.ts
+- app/api/clean/
+- app/(app)/clean/page.tsx
+- app/(app)/clean/
+- prisma/schema.prisma
+- utils/redis/clean.ts
 
 The database models to look at are:
 

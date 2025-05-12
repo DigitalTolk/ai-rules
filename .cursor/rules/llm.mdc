@@ -9,9 +9,9 @@ alwaysApply: false
 
 LLM-related code is organized in specific directories:
 
-- `apps/web/utils/ai/` - Main LLM implementations
-- `apps/web/utils/llms/` - Core LLM utilities and configurations
-- `apps/web/__tests__/` - LLM-specific tests
+- `utils/ai/` - Main LLM implementations
+- `utils/llms/` - Core LLM utilities and configurations
+- `__tests__/` - LLM-specific tests
 
 ## Key Files
 

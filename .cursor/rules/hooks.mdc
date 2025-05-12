@@ -10,7 +10,7 @@ This rule outlines the guidelines for creating custom React hooks within this pr
 ## Custom Hooks
 
 -   **Purpose:** Encapsulate reusable stateful logic, especially for data fetching or complex UI interactions.
--   **Location:** Place custom hooks in the `apps/web/hooks/` directory.
+-   **Location:** Place custom hooks in the `hooks/` directory.
 -   **Naming:** Use the `use` prefix (e.g., `useAccounts.ts`).
 -   **Data Fetching:** For fetching data from API endpoints, prefer using `useSWR`. Follow the guidelines outlined in [data-fetching.mdc](mdc:.cursor/rules/data-fetching.mdc).
     -   Create dedicated hooks for specific data types (e.g., `useAccounts`, `useLabels`).

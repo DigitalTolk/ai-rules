@@ -7,91 +7,105 @@ alwaysApply: false
 
 ## Main Structure
 
-- We use Turborepo with pnpm workspaces
-- Main app is in `apps/web`
-- Packages are in the `packages` folder
-- Server actions are in `apps/web/utils/actions` folder
+- We use Turborepo with pnpm workspaces  
+- Main Nuxt app lives at the project root (`/`)  
+- Packages are in the `packages` folder  
+- Server utilities and composables are in the `server/` and `composables/` directories  
 
 ```tree
 .
-├── apps
-│   ├── web/             # Main Next.js application
-│   │   ├── app/         # Next.js App Router
-│   │   │   ├── (app)/   # Main application pages
-│   │   │   │   ├── automation/     # AI assistant feature
-│   │   │   │   ├── reply-zero/     # Reply Zero feature
-│   │   │   │   ├── settings/       # User settings
-│   │   │   │   ├── setup/          # Main onboarding
-│   │   │   │   ├── clean/          # Bulk email cleanup
-│   │   │   │   ├── smart-categories/ # Smart sender categorization
-│   │   │   │   ├── bulk-unsubscribe/ # Bulk unsubscribe
-│   │   │   │   ├── stats/          # Email analytics
-│   │   │   │   ├── mail/           # Email client (in beta)
-│   │   │   │   └── ... (other app routes)
-│   │   │   ├── api/    # API Routes
-│   │   │   │   ├── knowledge/      # Knowledge base API
-│   │   │   │   ├── reply-tracker/  # Reply tracking
-│   │   │   │   ├── clean/          # Cleanup API
-│   │   │   │   ├── ai/            # AI features API
-│   │   │   │   ├── user/          # User management
-│   │   │   │   ├── google/        # Google integration
-│   │   │   │   ├── auth/          # Authentication
-│   │   │   │   └── ... (other APIs)
-│   │   │   ├── (landing)/  # Marketing/landing pages
-│   │   │   ├── blog/       # Blog pages
-│   │   │   ├── layout.tsx  # Root layout
-│   │   │   └── ... (other app files)
-│   │   ├── utils/       # Utility functions and helpers
-│   │   │   ├── actions/    # Server actions
-│   │   │   ├── ai/         # AI-related utilities
-│   │   │   ├── llms/       # Language model utilities
-│   │   │   ├── gmail/      # Gmail integration utilities
-│   │   │   ├── redis/      # Redis utilities
-│   │   │   ├── user/       # User-related utilities
-│   │   │   ├── parse/      # Parsing utilities
-│   │   │   ├── queue/      # Queue management
-│   │   │   ├── error-messages/  # Error handling
-│   │   │   └── *.ts        # Other utility files (auth, email, etc.)
-│   │   ├── public/      # Static assets (images, fonts)
-│   │   ├── prisma/      # Prisma schema and client
-│   │   ├── styles/      # Global CSS styles
-│   │   ├── providers/   # React Context providers
-│   │   ├── hooks/       # Custom React hooks
-│   │   ├── sanity/      # Sanity CMS integration
-│   │   ├── __tests__/   # AI test files (Vitest)
-│   │   ├── scripts/     # Utility scripts
-│   │   ├── store/       # State management
-│   │   ├── types/       # TypeScript type definitions
-│   │   ├── next.config.mjs
-│   │   ├── package.json
-│   │   └── ... (config files)
-│   └── unsubscriber/    # Automates unsubscribes using browser automation. Not currently in use
-├── packages
-    ├── tinybird/
-    ├── eslint-config/
-    ├── loops/
-    ├── resend/
-    ├── tinybird-ai-analytics/
-    └── tsconfig/
+├── pages/              # Page-based routing system (Nuxt 3)
+│   ├── index.vue       # Home page
+│   ├── automation/     # AI assistant feature
+│   ├── reply-zero/     # Reply Zero feature
+│   ├── settings/       # User settings
+│   ├── setup/          # Main onboarding
+│   ├── clean/          # Bulk email cleanup
+│   ├── smart-categories/ # Smart sender categorization
+│   ├── bulk-unsubscribe/ # Bulk unsubscribe
+│   ├── stats/          # Email analytics
+│   ├── mail/           # Email client (in beta)
+│   └── ... (other pages)
+├── components/         # Vue components
+│   ├── ui/             # Shadcn-style shared components
+│   └── ...             # Other reusable components
+├── composables/        # Vue composables (replaces React hooks)
+│   ├── useAuth.ts      # Auth composable
+│   ├── useUser.ts      # User data composable
+│   └── ...             # Other global composables
+├── server/             # API routes and server logic
+│   ├── api/            # Server API endpoints
+│   │   ├── knowledge.ts
+│   │   ├── reply-tracker.ts
+│   │   ├── clean.ts
+│   │   ├── ai.ts
+│   │   ├── user.ts
+│   │   ├── google.ts
+│   │   └── auth.ts
+│   └── utils/          # Server-side utility functions
+├── assets/             # Static assets (images, fonts)
+├── public/             # Publicly available static files
+├── plugins/            # Nuxt plugins
+├── layouts/            # Shared layouts for routes
+├── middleware/         # Route guards and middleware
+├── app.vue             # Root Vue component
+├── nuxt.config.ts      # Nuxt configuration
+├── types/              # Global TypeScript types
+├── tests/              # Vitest test files
+├── scripts/            # Development or automation scripts
+├── packages/
+│   ├── tinybird/
+│   ├── eslint-config/
+│   ├── loops/
+│   ├── resend/
+│   ├── tinybird-ai-analytics/
+│   └── tsconfig/
+├── package.json
+└── ... (other config files)
 ```
+
 
 ## File Naming and Organization
 
+- Use kebab-case for folders and file names in `pages/`
 - Use kebab case for route directories (e.g., `api/hello-world/route`)
-- Use PascalCase for components (e.g. `components/Button.tsx`)
-- Shadcn components are in `components/ui`
+- Use PascalCase for components (e.g. `components/Button.vue`)
+- Shadcn-style components go in `components/ui`
+- Place reusable logic in `composables/`
 - All other components are in `components/`
 - Colocate files in the folder where they're used unless they can be used across the app
 - If a component can be used in many places, place it in the `components` folder
+- Only global utilities belong in `server/utils` or composables
+
 
 ## New Pages
 
-- Create new pages at: `apps/web/app/(app)/PAGE_NAME/page.tsx`
-- Components for the page are either in `page.tsx` or in the `apps/web/app/(app)/PAGE_NAME` folder
-- Pages are Server components for direct data loading
-- Use `swr` for data fetching in deeply nested components
-- Components with `onClick` must be client components with `use client` directive
-- Server action files must start with `use server`
+- Create new pages in the `pages/` directory as `.vue` files
+- Use `<script setup>` and TypeScript by default
+- For dynamic routes, use `[param].vue` syntax
+- Use Nuxt's built-in `definePageMeta` and `useRoute()` for page-specific logic
+- Use `defineNuxtRouteMiddleware()` for middleware
+- `asyncData()` or `useAsyncData()` should be used for server-side fetching
+
+## Composables and Server Utilities
+
+- Define reusable logic in `composables/` with useXyz naming convention
+- Create server utilities (e.g., mail, Redis, analytics) in `server/utils`
+- Use `$fetch` or `useFetch()` for client-side requests to Nuxt APIs
+- Leverage Redis and Drizzle inside `server/api/` for secure access
+
+## Testing and Analytics
+
+- Test files go in the `tests/` directory and use `*.test.ts` or `*.spec.ts` naming
+- Use PostHog via plugin or server composable and track client interactions carefully
+- Do not track PII—obfuscate or anonymize user events
+
+## Email, Docs, and Observability
+
+- Use `server/api/resend.ts` to manage outbound email using Resend
+- Documentation should be maintained via Mintlify (`docs/`)
+- Observe app metrics with PostHog and log performance data from Nuxt server APIs
+
 
 ## Utility Functions
 
