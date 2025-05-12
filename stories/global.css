@@ -1,0 +1,60 @@
+@font-face {
+  font-family: "Proxima Nova";
+  src: url("/fonts/Proxima_Nova.otf") format("opentype");
+  font-weight: normal; /* This could be 400, which is the same as 'normal' */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Proxima Nova";
+  src: url("/fonts/Proxima_Nova_Medium.otf") format("opentype");
+  font-weight: 500; /* 500 is typically considered medium weight */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Proxima Nova";
+  src: url("/fonts/Proxima_Nova_Semibold.otf") format("opentype");
+  font-weight: 600; /* 600 is typically considered semibold weight */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Proxima Nova";
+  src: url("/fonts/Proxima_Nova_Bold.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Futura Font Faces */
+@font-face {
+  font-family: "Futura";
+  src: url("/fonts/Futura_Demi.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Futura";
+  src: url("/fonts/Futura_PT_Bold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Futura";
+  src: url("/fonts/Futura_PT_Heavy.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Futura";
+  src: url("/fonts/Fututa_PT_Extra_bold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+}
+
+table tbody tr[title="Hide Drawer Content Props items"] td:first-of-type {
+  width: 35% !important;
+}
