@@ -1,0 +1,40 @@
+---
+description: Progress indicator component for operations
+globs: components/base/BaseProgress.vue
+alwaysApply: false
+---
+
+# BaseProgress Component
+
+## Description
+Progress indicator component for operations
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseProgress></BaseProgress>
+</template>
+
+<script setup>
+import { BaseProgress } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

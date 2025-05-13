@@ -1,0 +1,11 @@
+---
+description: Navigation component for internal and external links
+globs: components/base/BaseLink.vue
+alwaysApply: false
+---
+
+---
+description:
+globs:
+alwaysApply: false
+---

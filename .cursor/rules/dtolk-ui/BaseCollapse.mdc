@@ -1,0 +1,40 @@
+---
+description: Collapsible content component for progressive disclosure
+globs: components/base/BaseCollapse.vue
+alwaysApply: false
+---
+
+# BaseCollapse Component
+
+## Description
+Collapsible content component for progressive disclosure
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseCollapse></BaseCollapse>
+</template>
+
+<script setup>
+import { BaseCollapse } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

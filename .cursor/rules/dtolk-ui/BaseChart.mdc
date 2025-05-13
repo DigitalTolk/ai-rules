@@ -1,0 +1,40 @@
+---
+description: Data visualization component for various chart types
+globs: components/base/BaseChart.vue
+alwaysApply: false
+---
+
+# BaseChart Component
+
+## Description
+Data visualization component for various chart types
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseChart></BaseChart>
+</template>
+
+<script setup>
+import { BaseChart } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

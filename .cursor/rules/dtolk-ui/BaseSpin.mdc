@@ -1,0 +1,11 @@
+---
+description: Loading indicator component for content loading states
+globs: components/base/BaseSpin.vue
+alwaysApply: false
+---
+
+---
+description:
+globs:
+alwaysApply: false
+---
