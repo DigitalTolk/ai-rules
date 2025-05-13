@@ -1,0 +1,86 @@
+---
+description: How to install packages
+globs: 
+alwaysApply: false
+---
+# Installing Packages
+
+## Package Manager
+- Use `pnpm` as the package manager for all installations
+- Install packages from the project root:
+
+```sh
+pnpm add <package-name>
+```
+
+- For dev dependencies:
+
+```sh
+pnpm add -D <package-name>
+```
+
+## Nuxt Modules
+- Install Nuxt modules as dev dependencies:
+
+```sh
+pnpm add -D @nuxt/ui
+```
+
+- Add the module to `nuxt.config.ts`:
+
+```ts
+export default defineNuxtConfig({
+  modules: [
+    '@nuxt/ui',
+    // other modules
+  ]
+})
+```
+
+## Common Nuxt Module Recommendations
+
+### UI and Styling
+- `@nuxt/ui` - Official UI components library
+- `@nuxtjs/tailwindcss` - Tailwind CSS integration
+- `@nuxtjs/color-mode` - Dark/light mode support
+
+### Data and API
+- `@nuxtjs/supabase` - Supabase integration
+- `nuxt-directus` - Directus headless CMS integration
+- `@pinia/nuxt` - Pinia state management
+
+### Authentication
+- `@sidebase/nuxt-auth` - Authentication module
+- `@auth/nuxt` - Auth.js integration
+
+### Performance and SEO
+- `nuxt-simple-sitemap` - Sitemap generation
+- `@nuxtjs/robots` - Robots.txt configuration
+- `@nuxt/image` - Optimized image handling
+
+## Updating Dependencies
+- Update all dependencies:
+
+```sh
+pnpm update
+```
+
+- Check for outdated packages:
+
+```sh
+pnpm outdated
+```
+
+## TypeScript Support
+- Install type definitions for libraries when needed:
+
+```sh
+pnpm add -D @types/package-name
+```
+
+## Troubleshooting
+- If you encounter issues after installing a package, try:
+  1. Clear cache: `pnpm store prune`
+  2. Delete node_modules: `rm -rf node_modules`
+  3. Delete lockfile: `rm pnpm-lock.yaml`
+  4. Reinstall dependencies: `pnpm install`

@@ -1,0 +1,40 @@
+---
+description: Dropdown selection component with single and multiple selection modes
+globs: components/base/BaseSelect.vue
+alwaysApply: false
+---
+
+# BaseSelect Component
+
+## Description
+Dropdown selection component with single and multiple selection modes
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseSelect></BaseSelect>
+</template>
+
+<script setup>
+import { BaseSelect } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

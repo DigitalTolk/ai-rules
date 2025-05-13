@@ -1,0 +1,11 @@
+---
+description: Utility component for creating consistent spacing between elements
+globs: components/base/BaseSpace.vue
+alwaysApply: false
+---
+
+---
+description:
+globs:
+alwaysApply: false
+---

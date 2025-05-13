@@ -1,0 +1,40 @@
+---
+description: Group component for managing related radio buttons
+globs: components/base/BaseRadioGroup.vue
+alwaysApply: false
+---
+
+# BaseRadioGroup Component
+
+## Description
+Group component for managing related radio buttons
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseRadioGroup></BaseRadioGroup>
+</template>
+
+<script setup>
+import { BaseRadioGroup } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

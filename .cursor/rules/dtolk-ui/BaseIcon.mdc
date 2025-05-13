@@ -1,0 +1,40 @@
+---
+description: Icon component with Material Icons support
+globs: components/base/BaseIcon.vue
+alwaysApply: false
+---
+
+# BaseIcon Component
+
+## Description
+Icon component with Material Icons support
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseIcon></BaseIcon>
+</template>
+
+<script setup>
+import { BaseIcon } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

@@ -1,0 +1,96 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# DigitalTolk UI Component Library
+
+This document serves as the central index for all DigitalTolk UI component rules, providing guidelines on usage, props, and implementation patterns.
+
+## Layout Components
+
+Components for creating layouts and managing spacing.
+
+| Component | Description |
+| :--- | :--- |
+| BaseCard | A versatile container component with header, footer, and content areas |
+| BaseGrid | A flexible layout system with responsive rows and columns |
+| BaseSpace | Utility component for creating consistent spacing between elements |
+| BaseDivider | Component for visual separation with optional text |
+
+## Form Components
+
+Components for building forms and collecting user input.
+
+| Component | Description |
+| :--- | :--- |
+| BaseTextField | Text input component with validation support |
+| BaseSelect | Dropdown selection component with single and multiple selection modes |
+| BaseCheckbox | Checkbox input component for boolean selections |
+| BaseCheckboxGroup | Group component for managing multiple related checkboxes |
+| BaseRadio | Radio button input component for single selections |
+| BaseRadioGroup | Group component for managing related radio buttons |
+| BaseSwitch | Toggle switch component for boolean settings |
+| BaseForm | Container component with validation handling for form elements |
+| BaseInputNumber | Numeric input component with increment/decrement controls |
+
+## Navigation Components
+
+Components for navigation and user interaction.
+
+| Component | Description |
+| :--- | :--- |
+| BaseLink | Navigation component for internal and external links |
+| BaseButton | Button component for triggering actions |
+| BaseTabs | Tabbed interface component for organizing related content |
+| BaseMenu | Menu component for displaying navigation options |
+| BaseNavigation | Navigation bar component for site-wide navigation |
+| BasePagination | Pagination component for navigating multi-page content |
+| BaseDrawer | Sliding drawer component for secondary content |
+
+## Display Components
+
+Components for displaying content and information.
+
+| Component | Description |
+| :--- | :--- |
+| BaseAlert | Component for displaying important messages and notifications |
+| BaseAvatar | User avatar component with image and text fallback |
+| BaseAvatarGroup | Component for displaying groups of user avatars |
+| BaseTag | Compact component for categories, labels, and status indicators |
+| BaseIcon | Icon component with Material Icons support |
+| BaseTooltip | Informational tooltip component |
+| BaseTable | Data table component with sorting and pagination |
+| BasePopover | Popover component for contextual information |
+| BasePopconfirm | Confirmation popover for critical actions |
+| BaseModal | Modal dialog component for focused user interactions |
+| BaseToaster | Toast notification component for temporary messages |
+| BaseSkeleton | Loading placeholder component for content |
+| BaseText | Typography component with consistent text styling |
+| BaseProgress | Progress indicator component for operations |
+| BaseBlankState | Empty state component for when content is unavailable |
+| BaseImage | Enhanced image component with loading and error states |
+| BaseImageGroup | Component for displaying groups of related images |
+| BaseRate | Rating component for user feedback |
+| BaseList | List component for displaying collections of items |
+| BaseCollapse | Collapsible content component for progressive disclosure |
+| BaseCode | Code display component with syntax highlighting |
+
+## Specialized Components
+
+Components for specific use cases or advanced functionality.
+
+| Component | Description |
+| :--- | :--- |
+| BaseSpin | Loading indicator component for content loading states |
+| BaseCalendar | Calendar display and date selection component |
+| BaseDatePicker | Date selection component with calendar interface |
+| BaseTimepicker | Time selection component |
+| BaseChart | Data visualization component for various chart types |
+| BaseTimeline | Timeline component for displaying chronological events |
+| BaseMenuCustom | Customizable menu component |
+| BaseMetric | Numeric metrics display component |
+| BaseTextEditor | Rich text editor component |
+| BasePageHeader | Page header component with title and actions |
+| BaseLocationField | Location input component with map integration |
+| BaseAutoComplete | Auto-complete text input with suggestions |

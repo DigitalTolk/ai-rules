@@ -1,0 +1,40 @@
+---
+description: Empty state component for when content is unavailable
+globs: components/base/BaseBlankState.vue
+alwaysApply: false
+---
+
+# BaseBlankState Component
+
+## Description
+Empty state component for when content is unavailable
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseBlankState></BaseBlankState>
+</template>
+
+<script setup>
+import { BaseBlankState } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

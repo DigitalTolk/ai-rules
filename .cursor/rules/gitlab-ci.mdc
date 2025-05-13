@@ -1,0 +1,230 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# GitLab CI/CD Configuration Rule
+
+## Description
+This rule provides guidance for creating and maintaining a GitLab CI/CD pipeline configuration file. The configuration follows a structured approach with mandatory stages and environment-specific deployments.
+
+## Mandatory Components
+
+### 1. Required Stages
+The following stages are mandatory and must be included in the pipeline:
+```yaml
+stages:
+  - pre-checks    # Mandatory: Initial validation and setup
+  - lint         # Optional: Code quality checks
+  - test         # Optional: Testing
+  - build        # Mandatory: Build process
+  - deploy       # Mandatory: Deployment
+  - health       # Optional: Health checks
+```
+
+### 2. Global Variables
+Essential variables that should be defined:
+```yaml
+variables:
+  NODEJS_VERSION: 20.11.0  # Specify Node.js version
+  VITE_IS_PIPELINE: 'true' # For pipeline-specific builds
+```
+
+### 3. Pipeline Structure
+The pipeline should be organized into three main environments:
+- Production (master branch)
+- Staging (master branch)
+- Preview (merge requests)
+
+## Implementation Guide
+
+### 1. Base Configuration
+```yaml
+include:
+  - project: dtolk/dope/pipelines
+    ref: main
+    file: frontend.yml
+
+variables:
+  NODEJS_VERSION: 20.11.0
+
+stages:
+  - pre-checks
+  - lint
+  - test
+  - build
+  - deploy
+  - health
+```
+
+### 2. Production Environment
+```yaml
+production:lint:
+  extends: .frontend:lint
+  environment:
+    name: prd
+    action: prepare
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"'
+
+production:test:
+  extends: .frontend:test
+  environment:
+    name: prd
+    action: prepare
+  variables:
+    VITE_IS_PIPELINE: 'true'
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"'
+
+production:build:
+  resource_group: prod_build_deploy_group
+  extends: .frontend:build
+  needs:
+    - production:test
+  environment:
+    name: prd
+    action: prepare
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"'
+
+production:deploy:
+  resource_group: prod_build_deploy_group
+  extends: .frontend:deploy
+  needs:
+    - production:build
+  environment:
+    name: prd
+    url: https://app.digitaltolk.se
+  variables:
+    DEST_FOLDER: ct-web/
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+```
+
+### 3. Staging Environment
+```yaml
+staging:lint:
+  extends: .frontend:lint
+  environment:
+    name: stg
+    action: prepare
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"'
+
+staging:test:
+  extends: .frontend:test
+  environment:
+    name: stg
+    action: prepare
+  variables:
+    VITE_IS_PIPELINE: 'true'
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"'
+
+staging:build:
+  extends: .frontend:build
+  needs:
+    - staging:test
+  environment:
+    name: stg
+    action: prepare
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"'
+
+staging:deploy:
+  extends: .frontend:deploy
+  needs:
+    - staging:build
+  environment:
+    name: stg
+    url: https://ct-web-stg.digitaltolk.net
+  variables:
+    DEST_FOLDER: ct-web-stg/
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+```
+
+### 4. Preview Environment
+```yaml
+preview:lint:
+  extends: .frontend:lint
+  environment:
+    name: pre/${CI_COMMIT_REF_SLUG}
+    action: prepare
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+preview:test:
+  extends: .frontend:test
+  needs:
+    - preview:lint
+  environment:
+    name: pre/${CI_COMMIT_REF_SLUG}
+    action: prepare
+  variables:
+    VITE_BASE_URL: /
+    VITE_IS_PIPELINE: 'true'
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+preview:build:
+  extends: .frontend:build
+  environment:
+    name: pre/${CI_COMMIT_REF_SLUG}
+    action: prepare
+  variables:
+    VITE_BASE_URL: /preview/${CI_COMMIT_REF_SLUG}
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+preview:deploy:
+  extends: .frontend:deploy
+  needs:
+    - preview:build
+  variables:
+    VITE_BASE_URL: /preview/${CI_COMMIT_REF_SLUG}
+    DEST_FOLDER: preview/ct-web${VITE_BASE_URL}
+  environment:
+    name: pre/${CI_COMMIT_REF_SLUG}
+    url: https://ct-web-preview.digitaltolk.net${VITE_BASE_URL}/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+```
+
+## Best Practices
+
+1. **Resource Groups**
+   - Use resource groups for deployment jobs to prevent concurrent deployments
+   - Example: `resource_group: prod_build_deploy_group`
+
+2. **Environment Configuration**
+   - Always specify environment name and URL for deployment jobs
+   - Use action: prepare for non-deployment jobs
+   - Use environment-specific variables
+
+3. **Job Dependencies**
+   - Use `needs` to specify job dependencies
+   - Ensure proper sequencing of jobs (e.g., build after test)
+
+4. **Rules**
+   - Use specific conditions for each environment
+   - Production/Staging: `$CI_COMMIT_BRANCH == "master"`
+   - Preview: `$CI_PIPELINE_SOURCE == "merge_request_event"`
+
+## Validation Checklist
+
+- [ ] All mandatory stages are included
+- [ ] Resource groups are properly configured
+- [ ] Environment configurations are complete
+- [ ] Job dependencies are correctly specified
+- [ ] Rules are properly defined for each environment
+- [ ] Variables are properly set for each environment
+- [ ] Health checks are implemented for production
+- [ ] Proper error handling and reporting is configured
+
+## Notes
+- The pipeline uses extends from a shared configuration (.frontend:*)
+- Environment-specific variables should be properly set
+- Health checks should be implemented for production deployments
+- Resource groups should be used to prevent concurrent deployments

@@ -1,0 +1,11 @@
+---
+description: A versatile container component with header, footer, and content areas
+globs: components/base/BaseCard.vue
+alwaysApply: false
+---
+
+---
+description:
+globs:
+alwaysApply: false
+---

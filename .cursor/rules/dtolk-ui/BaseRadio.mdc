@@ -1,0 +1,40 @@
+---
+description: Radio button input component for single selections
+globs: components/base/BaseRadio.vue
+alwaysApply: false
+---
+
+# BaseRadio Component
+
+## Description
+Radio button input component for single selections
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseRadio></BaseRadio>
+</template>
+
+<script setup>
+import { BaseRadio } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

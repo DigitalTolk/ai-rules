@@ -1,0 +1,260 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# BaseAvatar Component
+
+## Description
+BaseAvatar is a component used to represent a user or entity with an image, initials, or an icon. It provides a consistent way to display profile images and fallback content when images are unavailable. The component supports various sizes, shapes, and customization options to fit different design needs.
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| size | 'small' \| 'medium' \| 'large' \| number | 'medium' | Size of the avatar |
+| src | string | - | URL of the image to display |
+| round | boolean | true | Whether the avatar should be rounded (circle) |
+| bordered | boolean | false | Whether to show a border around the avatar |
+| color | string | - | Background color of the avatar when using text or icon |
+
+### Display Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| fallbackSrc | string | - | Fallback image URL to use when primary image fails to load |
+| objectFit | 'fill' \| 'contain' \| 'cover' \| 'none' \| 'scale-down' | 'cover' | CSS object-fit property for the image |
+| lazy | boolean | false | Whether to lazy load the image |
+| imgProps | object | - | Additional props to pass to the img element |
+
+### Event Props
+| Event | Parameters | Description |
+|-------|------------|-------------|
+| error | (event: Event) => void | Triggered when the image fails to load |
+
+### Slot Props
+| Slot | Description |
+|------|-------------|
+| default | Custom content to display when no image is available (text, icon, etc.) |
+| placeholder | Content to display while the image is loading |
+| fallback | Custom content to display when the image fails to load |
+
+## Examples
+
+### Basic Avatar with Image
+```jsx
+import { BaseAvatar } from '@digitaltolk/ui';
+
+const BasicAvatar = () => {
+  return (
+    <BaseAvatar src="https://example.com/user-profile.jpg" />
+  );
+};
+```
+
+### Avatar with Initials Fallback
+```jsx
+const InitialsAvatar = () => {
+  return (
+    <BaseAvatar 
+      src="https://example.com/potentially-missing-image.jpg" 
+      color="#8A2BE2"
+    >
+      JD
+    </BaseAvatar>
+  );
+};
+```
+
+### Avatar with Icon
+```jsx
+const IconAvatar = () => {
+  return (
+    <BaseAvatar color="#4CAF50">
+      <BaseIcon>person</BaseIcon>
+    </BaseAvatar>
+  );
+};
+```
+
+### Different Sizes
+```jsx
+const AvatarSizes = () => {
+  return (
+    <BaseSpace>
+      <BaseAvatar size="small" src="https://example.com/avatar1.jpg" />
+      <BaseAvatar size="medium" src="https://example.com/avatar2.jpg" />
+      <BaseAvatar size="large" src="https://example.com/avatar3.jpg" />
+      <BaseAvatar size={64} src="https://example.com/avatar4.jpg" />
+    </BaseSpace>
+  );
+};
+```
+
+### Square Avatar
+```jsx
+const SquareAvatar = () => {
+  return (
+    <BaseAvatar 
+      round={false} 
+      src="https://example.com/avatar.jpg"
+    />
+  );
+};
+```
+
+### Bordered Avatar
+```jsx
+const BorderedAvatar = () => {
+  return (
+    <BaseAvatar 
+      bordered 
+      src="https://example.com/avatar.jpg"
+    />
+  );
+};
+```
+
+### With Error Handling
+```jsx
+const ErrorHandlingAvatar = () => {
+  const handleError = () => {
+    console.log('Image failed to load');
+  };
+  
+  return (
+    <BaseAvatar 
+      src="https://example.com/non-existent-image.jpg"
+      fallbackSrc="https://example.com/fallback-image.jpg"
+      onError={handleError}
+    >
+      <template #fallback>
+        <BaseIcon>person</BaseIcon>
+      </template>
+    </BaseAvatar>
+  );
+};
+```
+
+## Best Practices
+
+1. **Image Quality**
+   - Use appropriately sized images to avoid pixelation
+   - Consider using the objectFit prop to control how images are displayed
+   - Use square images when possible to avoid distortion
+   - Ensure images have sufficient contrast with the background
+
+2. **Fallback Content**
+   - Always provide fallback content for when images fail to load
+   - Use initials for user avatars when appropriate
+   - Keep text fallbacks to 1-2 characters for readability
+   - Use icons that clearly represent the entity type
+
+3. **Accessibility**
+   - Include alt text for avatar images
+   - Ensure sufficient color contrast for text avatars
+   - Consider using aria-label for avatars without clear text content
+   - Test with screen readers to ensure proper announcements
+
+4. **Performance**
+   - Use the lazy prop for avatars that are not immediately visible
+   - Optimize avatar images to reduce loading time
+   - Consider using a CDN for avatar images
+   - Use appropriate image formats (WebP, JPEG) for photos
+
+## Common Patterns
+
+### User Profile Avatar
+```jsx
+const UserAvatar = ({ user }) => {
+  return (
+    <BaseAvatar 
+      src={user.profileImage} 
+      alt={`${user.name}'s profile picture`}
+    >
+      {user.initials}
+    </BaseAvatar>
+  );
+};
+```
+
+### Status Indicator with Avatar
+```jsx
+const StatusAvatar = ({ user }) => {
+  return (
+    <div className="avatar-with-status">
+      <BaseAvatar src={user.profileImage}>
+        {user.initials}
+      </BaseAvatar>
+      <div 
+        className="status-indicator" 
+        style={{ 
+          backgroundColor: user.isOnline ? '#4CAF50' : '#9E9E9E',
+          position: 'absolute',
+          bottom: '2px',
+          right: '2px',
+          width: '10px',
+          height: '10px',
+          borderRadius: '50%'
+        }} 
+      />
+    </div>
+  );
+};
+```
+
+### Avatar with Badge
+```jsx
+const BadgedAvatar = ({ user, notificationCount }) => {
+  return (
+    <div className="avatar-with-badge">
+      <BaseAvatar src={user.profileImage}>
+        {user.initials}
+      </BaseAvatar>
+      {notificationCount > 0 && (
+        <div 
+          className="notification-badge"
+          style={{
+            position: 'absolute',
+            top: '-5px',
+            right: '-5px',
+            backgroundColor: '#f44336',
+            color: 'white',
+            borderRadius: '50%',
+            width: '20px',
+            height: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '12px'
+          }}
+        >
+          {notificationCount > 9 ? '9+' : notificationCount}
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+## Testing Checklist
+
+- [ ] Avatar renders with an image when src is provided
+- [ ] Avatar displays fallback content when src is missing or image fails to load
+- [ ] Different sizes are applied correctly (small, medium, large, custom)
+- [ ] Round and non-round (square) variants display correctly
+- [ ] Bordered style applies correctly
+- [ ] Background color applies correctly for text and icon avatars
+- [ ] Error event fires when image fails to load
+- [ ] Lazy loading works when enabled
+- [ ] Object-fit property applies correctly
+- [ ] Placeholder content displays while image is loading
+- [ ] Custom fallback content displays when image fails to load
+- [ ] Custom image props are passed to the img element
+- [ ] Avatar maintains its size regardless of content
+
+## Related Components
+- [BaseAvatarGroup](mdc:BaseAvatarGroup.mdc) - For displaying multiple avatars as a group
+- [BaseIcon](mdc:BaseIcon.mdc) - For using icons within avatars
+- [BaseTooltip](mdc:BaseTooltip.mdc) - Often combined with avatars to show additional information
+- [BaseTag](mdc:BaseTag.mdc) - Sometimes used alongside avatars for labeling

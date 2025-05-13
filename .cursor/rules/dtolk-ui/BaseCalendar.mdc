@@ -1,0 +1,40 @@
+---
+description: Calendar display and date selection component
+globs: components/base/BaseCalendar.vue
+alwaysApply: false
+---
+
+# BaseCalendar Component
+
+## Description
+Calendar display and date selection component
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseCalendar></BaseCalendar>
+</template>
+
+<script setup>
+import { BaseCalendar } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

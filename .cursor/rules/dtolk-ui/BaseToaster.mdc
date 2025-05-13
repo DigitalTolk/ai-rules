@@ -1,0 +1,40 @@
+---
+description: Toast notification component for temporary messages
+globs: components/base/BaseToaster.vue
+alwaysApply: false
+---
+
+# BaseToaster Component
+
+## Description
+Toast notification component for temporary messages
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseToaster></BaseToaster>
+</template>
+
+<script setup>
+import { BaseToaster } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

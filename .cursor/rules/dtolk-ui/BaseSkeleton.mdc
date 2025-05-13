@@ -1,0 +1,40 @@
+---
+description: Loading placeholder component for content
+globs: components/base/BaseSkeleton.vue
+alwaysApply: false
+---
+
+# BaseSkeleton Component
+
+## Description
+Loading placeholder component for content
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseSkeleton></BaseSkeleton>
+</template>
+
+<script setup>
+import { BaseSkeleton } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

@@ -1,0 +1,40 @@
+---
+description: Popover component for contextual information
+globs: components/base/BasePopover.vue
+alwaysApply: false
+---
+
+# BasePopover Component
+
+## Description
+Popover component for contextual information
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BasePopover></BasePopover>
+</template>
+
+<script setup>
+import { BasePopover } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

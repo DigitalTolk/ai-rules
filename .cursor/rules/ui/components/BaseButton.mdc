@@ -1,0 +1,248 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# BaseButton Component
+
+## Description
+BaseButton is a fundamental UI component that provides a clickable button with various styles, sizes, and states. It supports different types of interactions and can be customized to match the application's design system.
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| type | 'primary' \| 'secondary' \| 'text' \| 'link' | 'primary' | The type of button style |
+| size | 'small' \| 'medium' \| 'large' | 'medium' | The size of the button |
+| shape | 'default' \| 'circle' \| 'round' | 'default' | The shape of the button |
+| disabled | boolean | false | Whether the button is disabled |
+| loading | boolean | false | Whether the button is in loading state |
+| danger | boolean | false | Whether the button is in danger state |
+| ghost | boolean | false | Whether the button is ghost style |
+| block | boolean | false | Whether the button should take full width |
+| icon | ReactNode | - | Icon to be displayed in the button |
+
+### Event Props
+| Prop | Type | Description |
+|------|------|-------------|
+| onClick | (event: MouseEvent) => void | Click event handler |
+| onMouseEnter | (event: MouseEvent) => void | Mouse enter event handler |
+| onMouseLeave | (event: MouseEvent) => void | Mouse leave event handler |
+| onFocus | (event: FocusEvent) => void | Focus event handler |
+| onBlur | (event: FocusEvent) => void | Blur event handler |
+
+### Accessibility Props
+| Prop | Type | Description |
+|------|------|-------------|
+| aria-label | string | Accessibility label for screen readers |
+| role | string | ARIA role for the button |
+| tabIndex | number | Tab index for keyboard navigation |
+
+## Examples
+
+### Basic Usage
+```jsx
+import { BaseButton } from '@digitaltolk/ui';
+
+const BasicButton = () => (
+  <BaseButton onClick={() => console.log('clicked')}>
+    Click Me
+  </BaseButton>
+);
+```
+
+### Different Types
+```jsx
+const ButtonTypes = () => (
+  <div>
+    <BaseButton type="primary">Primary</BaseButton>
+    <BaseButton type="secondary">Secondary</BaseButton>
+    <BaseButton type="text">Text</BaseButton>
+    <BaseButton type="link">Link</BaseButton>
+  </div>
+);
+```
+
+### With Icon
+```jsx
+import { BaseIcon } from '@digitaltolk/ui';
+
+const IconButton = () => (
+  <BaseButton icon={<BaseIcon type="search" />}>
+    Search
+  </BaseButton>
+);
+```
+
+### Loading State
+```jsx
+const LoadingButton = () => {
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async () => {
+    setLoading(true);
+    await someAsyncOperation();
+    setLoading(false);
+  };
+
+  return (
+    <BaseButton loading={loading} onClick={handleClick}>
+      Submit
+    </BaseButton>
+  );
+};
+```
+
+### Disabled State
+```jsx
+const DisabledButton = () => (
+  <BaseButton disabled onClick={() => console.log('clicked')}>
+    Cannot Click
+  </BaseButton>
+);
+```
+
+### Danger Button
+```jsx
+const DangerButton = () => (
+  <BaseButton danger onClick={handleDelete}>
+    Delete
+  </BaseButton>
+);
+```
+
+### Block Button
+```jsx
+const BlockButton = () => (
+  <BaseButton block onClick={handleSubmit}>
+    Submit Form
+  </BaseButton>
+);
+```
+
+### With Custom Styling
+```jsx
+const CustomButton = () => (
+  <BaseButton
+    style={{
+      backgroundColor: '#ff4d4f',
+      borderColor: '#ff4d4f',
+      color: '#fff',
+    }}
+    onClick={handleCustomAction}
+  >
+    Custom Style
+  </BaseButton>
+);
+```
+
+## Best Practices
+
+1. **Button Text**
+   - Use clear, action-oriented text
+   - Keep text concise
+   - Use sentence case for button text
+
+2. **Button States**
+   - Always handle loading states for async operations
+   - Provide visual feedback for disabled states
+   - Use danger state for destructive actions
+
+3. **Accessibility**
+   - Always provide aria-label for icon-only buttons
+   - Ensure sufficient color contrast
+   - Support keyboard navigation
+
+4. **Performance**
+   - Debounce click handlers for frequent actions
+   - Use proper event handling
+   - Implement proper cleanup
+
+## Common Patterns
+
+### Form Submission
+```jsx
+const SubmitButton = () => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      await submitForm();
+      BaseToaster.success('Form submitted successfully');
+    } catch (error) {
+      BaseToaster.error('Failed to submit form');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <BaseButton
+      type="primary"
+      loading={loading}
+      onClick={handleSubmit}
+    >
+      Submit
+    </BaseButton>
+  );
+};
+```
+
+### Confirmation Dialog
+```jsx
+const DeleteButton = () => {
+  const handleDelete = () => {
+    BaseModal.confirm({
+      title: 'Are you sure?',
+      content: 'This action cannot be undone.',
+      onOk: () => {
+        // Perform delete operation
+      },
+    });
+  };
+
+  return (
+    <BaseButton
+      danger
+      onClick={handleDelete}
+    >
+      Delete
+    </BaseButton>
+  );
+};
+```
+
+### Icon with Text
+```jsx
+const IconTextButton = () => (
+  <BaseButton
+    icon={<BaseIcon type="download" />}
+    onClick={handleDownload}
+  >
+    Download
+  </BaseButton>
+);
+```
+
+## Testing Checklist
+
+- [ ] Button renders correctly with all props
+- [ ] Click handler works as expected
+- [ ] Loading state works correctly
+- [ ] Disabled state works correctly
+- [ ] Different types render correctly
+- [ ] Icon renders correctly
+- [ ] Accessibility features work
+- [ ] Keyboard navigation works
+- [ ] Custom styles are applied correctly
+- [ ] Event handlers work as expected
+
+## Notes
+- Always provide meaningful text for buttons
+- Use appropriate button types for different actions
+- Handle loading states for async operations
+- Ensure proper accessibility
+- Test all button states and interactions
+- Follow the design system guidelines

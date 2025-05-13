@@ -1,0 +1,560 @@
+---
+description: Compact component for categories, labels, and status indicators
+globs: components/base/BaseTag.vue
+alwaysApply: false
+---
+
+---
+description:
+globs:
+alwaysApply: false
+---
+# BaseTag Component
+
+## Description
+BaseTag is a compact element for displaying categories, attributes, or labels. It can be used to show status, highlight information, or create interactive filtering interfaces. The component supports various appearances, states, and behaviors including closable, checkable, and custom colored tags.
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| type | 'default' \| 'primary' \| 'info' \| 'success' \| 'warning' \| 'error' | 'default' | The visual type/style of the tag |
+| size | 'small' \| 'medium' \| 'large' | 'medium' | Size of the tag |
+| checkable | boolean | false | Whether the tag can be checked/unchecked |
+| closable | boolean | false | Whether to show a close button on the tag |
+| disabled | boolean | false | Whether the tag is disabled |
+
+### Appearance Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| bordered | boolean | false | Whether the tag has a border |
+| round | boolean | false | Whether the tag has rounded corners |
+| strong | boolean | false | Whether to use strong text weight |
+| color | { color?: string, borderColor?: string, textColor?: string } | - | Custom color configuration (overrides type colors) |
+| themeOverrides | object | - | Custom theme overrides for the component |
+
+### Behavior Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| modelValue | boolean | false | Whether the tag is checked (for checkable tags) |
+| triggerClickOnClose | boolean | false | Whether clicking close button also triggers click event |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | The content of the tag |
+| icon | Slot for an icon at the start of the tag |
+| avatar | Slot for an avatar (replaces icon if both are provided) |
+
+## Events
+
+| Event | Parameters | Description |
+|-------|------------|-------------|
+| close | - | Emitted when the close button is clicked |
+| update:modelValue | (checked: boolean) | Emitted when the checked state changes |
+| click | (e: MouseEvent) | Emitted when the tag is clicked |
+
+## Examples
+
+### Basic Tags
+```vue
+<template>
+  <div class="tag-container">
+    <BaseTag>Default</BaseTag>
+    <BaseTag type="primary">Primary</BaseTag>
+    <BaseTag type="info">Info</BaseTag>
+    <BaseTag type="success">Success</BaseTag>
+    <BaseTag type="warning">Warning</BaseTag>
+    <BaseTag type="error">Error</BaseTag>
+  </div>
+</template>
+
+<script setup>
+import { BaseTag } from '@digitaltolk/ui';
+</script>
+
+<style scoped>
+.tag-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+</style>
+```
+
+### Sizes
+```vue
+<template>
+  <div class="tag-container">
+    <BaseTag size="small">Small</BaseTag>
+    <BaseTag size="medium">Medium</BaseTag>
+    <BaseTag size="large">Large</BaseTag>
+  </div>
+</template>
+
+<script setup>
+import { BaseTag } from '@digitaltolk/ui';
+</script>
+```
+
+### With Icon
+```vue
+<template>
+  <div class="tag-container">
+    <BaseTag>
+      <template #icon>
+        <BaseIcon>star</BaseIcon>
+      </template>
+      Featured
+    </BaseTag>
+    
+    <BaseTag type="success">
+      <template #icon>
+        <BaseIcon>check_circle</BaseIcon>
+      </template>
+      Completed
+    </BaseTag>
+    
+    <BaseTag type="warning">
+      <template #icon>
+        <BaseIcon>warning</BaseIcon>
+      </template>
+      Warning
+    </BaseTag>
+  </div>
+</template>
+
+<script setup>
+import { BaseTag, BaseIcon } from '@digitaltolk/ui';
+</script>
+```
+
+### With Avatar
+```vue
+<template>
+  <div class="tag-container">
+    <BaseTag>
+      <template #avatar>
+        <BaseAvatar size="small" src="/avatars/user1.jpg" />
+      </template>
+      Jane Doe
+    </BaseTag>
+    
+    <BaseTag type="primary">
+      <template #avatar>
+        <BaseAvatar size="small" src="/avatars/user2.jpg" />
+      </template>
+      John Smith
+    </BaseTag>
+  </div>
+</template>
+
+<script setup>
+import { BaseTag, BaseAvatar } from '@digitaltolk/ui';
+</script>
+```
+
+### Closable Tags
+```vue
+<template>
+  <div class="tag-container">
+    <BaseTag 
+      v-for="(tag, index) in tags" 
+      :key="index"
+      closable
+      @close="removeTag(index)"
+    >
+      {{ tag }}
+    </BaseTag>
+    
+    <BaseButton size="small" @click="addTag">
+      <BaseIcon>add</BaseIcon>
+      Add Tag
+    </BaseButton>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { BaseTag, BaseButton, BaseIcon } from '@digitaltolk/ui';
+
+const tags = ref(['Tag 1', 'Tag 2', 'Tag 3']);
+
+const removeTag = (index) => {
+  tags.value.splice(index, 1);
+};
+
+const addTag = () => {
+  const newTag = `Tag ${tags.value.length + 1}`;
+  tags.value.push(newTag);
+};
+</script>
+```
+
+### Checkable Tags
+```vue
+<template>
+  <div class="tag-container">
+    <BaseTag 
+      v-for="(category, index) in categories" 
+      :key="index"
+      checkable
+      v-model="category.checked"
+      :type="category.checked ? 'primary' : 'default'"
+    >
+      {{ category.name }}
+    </BaseTag>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { BaseTag } from '@digitaltolk/ui';
+
+const categories = ref([
+  { name: 'Frontend', checked: false },
+  { name: 'Backend', checked: true },
+  { name: 'Design', checked: false },
+  { name: 'DevOps', checked: false }
+]);
+</script>
+```
+
+### Custom Colors
+```vue
+<template>
+  <div class="tag-container">
+    <BaseTag :color="{ color: '#f0f9ff', textColor: '#0369a1', borderColor: '#0ea5e9' }">
+      Custom Blue
+    </BaseTag>
+    
+    <BaseTag :color="{ color: '#fdf4ff', textColor: '#a21caf', borderColor: '#d946ef' }">
+      Custom Purple
+    </BaseTag>
+    
+    <BaseTag :color="{ color: '#ecfdf5', textColor: '#047857', borderColor: '#10b981' }">
+      Custom Green
+    </BaseTag>
+  </div>
+</template>
+
+<script setup>
+import { BaseTag } from '@digitaltolk/ui';
+</script>
+```
+
+### Interactive Tag List
+```vue
+<template>
+  <div>
+    <div class="filter-title">Filter by:</div>
+    <div class="tag-container">
+      <BaseTag 
+        v-for="filter in filters" 
+        :key="filter.id"
+        checkable
+        v-model="filter.active"
+        :type="filter.active ? 'primary' : 'default'"
+        @update:model-value="applyFilters"
+      >
+        {{ filter.name }}
+      </BaseTag>
+    </div>
+    
+    <div class="selected-filters" v-if="activeFilters.length > 0">
+      <div class="filter-title">Selected filters:</div>
+      <div class="tag-container">
+        <BaseTag 
+          v-for="filter in activeFilters" 
+          :key="filter.id"
+          closable
+          type="primary"
+          @close="removeFilter(filter.id)"
+        >
+          {{ filter.name }}
+        </BaseTag>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+import { BaseTag } from '@digitaltolk/ui';
+
+const filters = ref([
+  { id: 1, name: 'Recent', active: false },
+  { id: 2, name: 'Popular', active: false },
+  { id: 3, name: 'Trending', active: true },
+  { id: 4, name: 'Featured', active: false }
+]);
+
+const activeFilters = computed(() => {
+  return filters.value.filter(filter => filter.active);
+});
+
+const applyFilters = () => {
+  console.log('Applied filters:', activeFilters.value);
+  // Apply filtering logic here
+};
+
+const removeFilter = (id) => {
+  const filter = filters.value.find(f => f.id === id);
+  if (filter) {
+    filter.active = false;
+    applyFilters();
+  }
+};
+</script>
+
+<style scoped>
+.filter-title {
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.tag-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.selected-filters {
+  margin-top: 16px;
+}
+</style>
+```
+
+## Best Practices
+
+1. **Usage**
+   - Use tags for categorization, filtering, or highlighting important attributes
+   - Keep tag text short and descriptive (1-3 words ideally)
+   - Group related tags together for better understanding
+   - Use consistent tag types across the application for similar purposes
+
+2. **Appearance**
+   - Choose appropriate colors based on semantic meaning
+   - Maintain sufficient contrast between tag color and text
+   - Use round prop for softer appearance when appropriate
+   - Limit the number of different colors in a single view
+
+3. **Behavior**
+   - Use checkable tags for filtering interfaces
+   - Use closable tags for removable elements like filters or selections
+   - Consider disabled state for tags that are not currently selectable
+   - Add clear and reset options for large tag filter collections
+
+4. **Accessibility**
+   - Ensure sufficient color contrast for all tag states
+   - Provide keyboard navigation for interactive tags
+   - Include clear visual cues for checked and active states
+   - Make sure close buttons are properly sized for touch interfaces
+
+## Common Patterns
+
+### Status Indicators
+```vue
+<template>
+  <div class="status-container">
+    <BaseTag type="success" v-if="status === 'active'">Active</BaseTag>
+    <BaseTag type="error" v-else-if="status === 'inactive'">Inactive</BaseTag>
+    <BaseTag type="warning" v-else-if="status === 'pending'">Pending</BaseTag>
+    <BaseTag v-else>Unknown</BaseTag>
+  </div>
+</template>
+
+<script setup>
+import { BaseTag } from '@digitaltolk/ui';
+
+const props = defineProps({
+  status: {
+    type: String,
+    required: true
+  }
+});
+</script>
+```
+
+### Tag Input
+```vue
+<template>
+  <div class="tag-input-container">
+    <div class="tags-area">
+      <BaseTag 
+        v-for="(tag, index) in tags" 
+        :key="index"
+        closable
+        size="small"
+        @close="removeTag(index)"
+      >
+        {{ tag }}
+      </BaseTag>
+      
+      <input
+        v-if="!inputDisabled"
+        ref="input"
+        v-model="inputValue"
+        @keydown.enter.prevent="addTag"
+        @keydown.backspace="handleBackspace"
+        @blur="handleBlur"
+        placeholder="Add tag..."
+        class="tag-input"
+      />
+    </div>
+    
+    <div v-if="maxTags && tags.length >= maxTags" class="max-tags-message">
+      Maximum number of tags reached
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+import { BaseTag } from '@digitaltolk/ui';
+
+const props = defineProps({
+  modelValue: {
+    type: Array,
+    default: () => []
+  },
+  maxTags: {
+    type: Number,
+    default: null
+  }
+});
+
+const emit = defineEmits(['update:modelValue']);
+
+const tags = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
+});
+
+const inputValue = ref('');
+const input = ref(null);
+
+const inputDisabled = computed(() => {
+  return props.maxTags !== null && tags.value.length >= props.maxTags;
+});
+
+const addTag = () => {
+  if (inputValue.value.trim() && !inputDisabled.value) {
+    if (!tags.value.includes(inputValue.value.trim())) {
+      tags.value = [...tags.value, inputValue.value.trim()];
+      inputValue.value = '';
+    }
+  }
+};
+
+const removeTag = (index) => {
+  const newTags = [...tags.value];
+  newTags.splice(index, 1);
+  tags.value = newTags;
+  input.value?.focus();
+};
+
+const handleBackspace = (e) => {
+  if (inputValue.value === '' && tags.value.length > 0) {
+    removeTag(tags.value.length - 1);
+  }
+};
+
+const handleBlur = () => {
+  if (inputValue.value.trim()) {
+    addTag();
+  }
+};
+</script>
+
+<style scoped>
+.tag-input-container {
+  width: 100%;
+}
+
+.tags-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  min-height: 40px;
+}
+
+.tag-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  min-width: 80px;
+}
+
+.max-tags-message {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+</style>
+```
+
+### Filter Dropdown
+```vue
+<template>
+  <BaseDropdown 
+    trigger="click" 
+    :options="filterOptions"
+    @select="handleSelect"
+  >
+    <BaseButton>
+      <BaseIcon>filter_list</BaseIcon>
+      Filter
+    </BaseButton>
+  </BaseDropdown>
+  
+  <div class="active-filters">
+    <BaseTag 
+      v-for="filter in activeFilters" 
+      :key="filter.value"
+      closable
+      type="primary"
+      size="small"
+      @close="removeFilter(filter.value)"
+    >
+      {{ filter.label }}
+    </BaseTag>
+  </div>
+</template>
+```
+
+## Testing Checklist
+
+- [ ] Tag renders correctly with default props
+- [ ] Different types (primary, info, etc.) apply correct styling
+- [ ] Size variants render with appropriate dimensions
+- [ ] Icon slot content displays correctly
+- [ ] Avatar slot content displays correctly
+- [ ] Closable prop shows close button when true
+- [ ] Close event fires when close button is clicked
+- [ ] Checkable tags toggle correctly when clicked
+- [ ] Disabled tags don't respond to interactions
+- [ ] Custom colors apply correctly to the tag
+- [ ] Round prop correctly applies rounded corners
+- [ ] Strong prop applies correct font weight
+- [ ] Bordered prop applies correct border styling
+- [ ] Tag handles long text content appropriately
+
+## Related Components
+
+- BaseAvatar: For including profile pictures in tags
+- BaseIcon: For adding icons to tags
+- BaseDropdown: For creating tag filter dropdowns
+- BaseInput: Often used with tags for creating tag inputs
+- BaseSelect: For multi-select options that can display as tags
+- BaseAutoComplete: For suggesting tags while typing

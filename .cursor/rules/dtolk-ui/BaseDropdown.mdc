@@ -1,0 +1,40 @@
+---
+description: Dropdown menu component for contextual options
+globs: components/base/BaseDropdown.vue
+alwaysApply: false
+---
+
+# BaseDropdown Component
+
+## Description
+Dropdown menu component for contextual options
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseDropdown></BaseDropdown>
+</template>
+
+<script setup>
+import { BaseDropdown } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

@@ -1,0 +1,444 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# BaseModal Component
+
+## Description
+BaseModal is an overlay component that displays content on top of the main UI, requiring user interaction before returning to the main view. It can be used for alerts, confirmations, forms, and complex dialogs. BaseModal supports two presets: "card" and "dialog", each with different styling and behavior options.
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| v-model / modelValue | boolean | false | Controls whether the modal is visible |
+| preset | 'card' \| 'dialog' | 'card' | The preset style to use for the modal |
+| width | number \| string | - | The width of the modal (pixels or percentage) |
+| blockScroll | boolean | true | Whether to disable body scrolling when modal is open |
+| closeOnEsc | boolean | true | Whether to close modal when Esc key is pressed |
+| maskClosable | boolean | true | Whether clicking the mask closes the modal |
+| closable | boolean | true | Whether to show the close button (dialog preset) |
+
+### Position Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| transformOrigin | 'mouse' \| 'center' | 'mouse' | The transform origin of the modal's animation |
+| zIndex | number | - | Z-index of the modal |
+| to | string | - | The DOM node to which the modal should be appended |
+
+### Style Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| footerLayout | 'row' \| 'column' | 'row' | Layout of the action slot (dialog preset) |
+| themeOverrides | object | - | Custom theme overrides for the component |
+
+### Event Props
+| Event | Parameters | Description |
+|-------|------------|-------------|
+| update:show | (show: boolean) => void | Triggered when modal visibility changes |
+| after-enter | () => void | Triggered after modal appears and animation completes |
+| after-leave | () => void | Triggered after modal disappears and animation completes |
+| esc | () => void | Triggered when Esc key is pressed |
+| mask-click | () => void | Triggered when the mask is clicked |
+
+### Slot Props
+| Slot | Description |
+|------|-------------|
+| default | Main content of the modal |
+| header | Content for the modal header |
+| header-extra | Additional content for the header (card preset only) |
+| footer | Content for the modal footer (card preset only) |
+| action | Additional actions, typically buttons (dialog preset uses this as the footer) |
+| icon | Custom icon (dialog preset only) |
+| close | Custom close button content (dialog preset only) |
+
+## Examples
+
+### Basic Modal
+```jsx
+import { ref } from 'vue';
+import { BaseModal, BaseButton } from '@digitaltolk/ui';
+
+const BasicModal = () => {
+  const showModal = ref(false);
+  
+  return (
+    <div>
+      <BaseButton onClick={() => showModal.value = true}>
+        Open Modal
+      </BaseButton>
+      
+      <BaseModal v-model={showModal.value}>
+        <template #header>Modal Title</template>
+        <p>This is the modal content.</p>
+        <template #footer>
+          <BaseButton onClick={() => showModal.value = false}>Close</BaseButton>
+        </template>
+      </BaseModal>
+    </div>
+  );
+};
+```
+
+### Dialog Modal
+```jsx
+const DialogModal = () => {
+  const showDialog = ref(false);
+  
+  return (
+    <div>
+      <BaseButton onClick={() => showDialog.value = true}>
+        Open Dialog
+      </BaseButton>
+      
+      <BaseModal 
+        v-model={showDialog.value} 
+        preset="dialog"
+        closeOnEsc
+      >
+        <template #header>Confirmation</template>
+        <p>Are you sure you want to proceed with this action?</p>
+        <template #action>
+          <BaseButton ghost type="secondary" onClick={() => showDialog.value = false}>
+            Cancel
+          </BaseButton>
+          <BaseButton onClick={() => {
+            // Handle confirmation
+            showDialog.value = false;
+          }}>
+            Confirm
+          </BaseButton>
+        </template>
+      </BaseModal>
+    </div>
+  );
+};
+```
+
+### Modal with Custom Width
+```jsx
+const CustomWidthModal = () => {
+  const showModal = ref(false);
+  
+  return (
+    <div>
+      <BaseButton onClick={() => showModal.value = true}>
+        Open Wide Modal
+      </BaseButton>
+      
+      <BaseModal 
+        v-model={showModal.value}
+        width={800}
+      >
+        <template #header>Wide Modal</template>
+        <div style="height: 400px; overflow: auto;">
+          <p>This modal has a custom width of 800px.</p>
+          {/* More content */}
+        </div>
+      </BaseModal>
+    </div>
+  );
+};
+```
+
+### Modal with Custom Animation Origin
+```jsx
+const CustomAnimationModal = () => {
+  const showModal = ref(false);
+  
+  return (
+    <div>
+      <BaseButton onClick={() => showModal.value = true}>
+        Center Animation
+      </BaseButton>
+      
+      <BaseModal 
+        v-model={showModal.value}
+        transformOrigin="center"
+      >
+        <template #header>Centered Animation</template>
+        <p>This modal animates from the center rather than from the mouse position.</p>
+      </BaseModal>
+    </div>
+  );
+};
+```
+
+### Form Modal
+```jsx
+const FormModal = () => {
+  const showModal = ref(false);
+  const formData = ref({ name: '', email: '' });
+  
+  const handleSubmit = () => {
+    // Process form data
+    console.log('Form submitted:', formData.value);
+    showModal.value = false;
+  };
+  
+  return (
+    <div>
+      <BaseButton onClick={() => showModal.value = true}>
+        Open Form
+      </BaseButton>
+      
+      <BaseModal 
+        v-model={showModal.value}
+        preset="card"
+      >
+        <template #header>Contact Form</template>
+        <div>
+          <BaseTextField 
+            label="Name" 
+            v-model={formData.value.name} 
+          />
+          <BaseTextField 
+            label="Email" 
+            v-model={formData.value.email} 
+          />
+        </div>
+        <template #footer>
+          <BaseButton type="secondary" ghost onClick={() => showModal.value = false}>
+            Cancel
+          </BaseButton>
+          <BaseButton onClick={handleSubmit}>
+            Submit
+          </BaseButton>
+        </template>
+      </BaseModal>
+    </div>
+  );
+};
+```
+
+### Custom Header with Extra Content
+```jsx
+const CustomHeaderModal = () => {
+  const showModal = ref(false);
+  
+  return (
+    <div>
+      <BaseButton onClick={() => showModal.value = true}>
+        Custom Header
+      </BaseButton>
+      
+      <BaseModal v-model={showModal.value}>
+        <template #header>
+          <h3>Product Details</h3>
+        </template>
+        <template #header-extra>
+          <BaseButton size="small">Edit</BaseButton>
+        </template>
+        <div>
+          <p>Product information goes here...</p>
+        </div>
+      </BaseModal>
+    </div>
+  );
+};
+```
+
+## Best Practices
+
+1. **Modal Purpose**
+   - Use modals for focused interactions that require user attention
+   - Keep modal content focused on a single task or decision
+   - Use appropriate preset ("card" or "dialog") based on content complexity
+   - Consider whether a modal is the best UX choice versus inline expansion
+
+2. **Modal Size and Content**
+   - Keep modals as small as possible while accommodating content
+   - Avoid long scrolling content within modals
+   - Set appropriate width based on content type
+   - Use appropriate padding and whitespace
+
+3. **User Interaction**
+   - Provide clear actions for proceeding or dismissing
+   - For forms, offer both "Submit" and "Cancel" options
+   - Use consistent button ordering and styling
+   - For "dialog" preset, use button colors that indicate action importance
+
+4. **Accessibility**
+   - Ensure modals are keyboard navigable
+   - Trap focus within the modal when open
+   - Support Esc key for closing (via closeOnEsc)
+   - Provide descriptive headers and action labels
+
+## Common Patterns
+
+### Confirmation Dialog
+```jsx
+const confirmAction = (action, item) => {
+  const modal = BaseModal.confirm({
+    title: 'Confirm Action',
+    content: `Are you sure you want to ${action} ${item}?`,
+    positiveText: 'Confirm',
+    negativeText: 'Cancel',
+    onPositiveClick: () => {
+      // Perform action
+      console.log(`${action} confirmed for ${item}`);
+    },
+    onNegativeClick: () => {
+      console.log('Action cancelled');
+    }
+  });
+};
+
+// Usage
+<BaseButton onClick={() => confirmAction('delete', 'this item')}>
+  Delete Item
+</BaseButton>
+```
+
+### Multi-Step Form Modal
+```jsx
+const MultiStepFormModal = () => {
+  const showModal = ref(false);
+  const currentStep = ref(1);
+  const totalSteps = 3;
+  const formData = ref({});
+  
+  const nextStep = () => {
+    if (currentStep.value < totalSteps) {
+      currentStep.value++;
+    } else {
+      // Submit form
+      submitForm();
+    }
+  };
+  
+  const prevStep = () => {
+    if (currentStep.value > 1) {
+      currentStep.value--;
+    }
+  };
+  
+  const submitForm = () => {
+    console.log('Form submitted:', formData.value);
+    showModal.value = false;
+    currentStep.value = 1;
+  };
+  
+  return (
+    <div>
+      <BaseButton onClick={() => showModal.value = true}>
+        Multi-Step Form
+      </BaseButton>
+      
+      <BaseModal v-model={showModal.value} width={600}>
+        <template #header>
+          Step {currentStep.value} of {totalSteps}
+        </template>
+        
+        <div style="min-height: 200px;">
+          {currentStep.value === 1 && (
+            <div>
+              <h3>Basic Information</h3>
+              {/* Step 1 form fields */}
+            </div>
+          )}
+          
+          {currentStep.value === 2 && (
+            <div>
+              <h3>Additional Details</h3>
+              {/* Step 2 form fields */}
+            </div>
+          )}
+          
+          {currentStep.value === 3 && (
+            <div>
+              <h3>Review & Submit</h3>
+              {/* Review form data */}
+            </div>
+          )}
+        </div>
+        
+        <template #footer>
+          <div style="display: flex; justify-content: space-between; width: 100%;">
+            <BaseButton 
+              ghost
+              type="secondary" 
+              onClick={prevStep}
+              disabled={currentStep.value === 1}
+            >
+              Previous
+            </BaseButton>
+            
+            <BaseButton onClick={nextStep}>
+              {currentStep.value === totalSteps ? 'Submit' : 'Next'}
+            </BaseButton>
+          </div>
+        </template>
+      </BaseModal>
+    </div>
+  );
+};
+```
+
+### Preview Modal
+```jsx
+const PreviewModal = ({ item }) => {
+  const showModal = ref(false);
+  
+  return (
+    <div>
+      <BaseButton onClick={() => showModal.value = true}>
+        Preview
+      </BaseButton>
+      
+      <BaseModal 
+        v-model={showModal.value}
+        preset="card"
+        width={700}
+      >
+        <template #header>{item.title}</template>
+        <template #header-extra>
+          <BaseButton size="small" onClick={() => window.open(item.url)}>
+            Open Full View
+          </BaseButton>
+        </template>
+        
+        <div>
+          <img 
+            src={item.previewImage} 
+            alt={item.title}
+            style="max-width: 100%; max-height: 400px; object-fit: contain;"
+          />
+          <p>{item.description}</p>
+        </div>
+      </BaseModal>
+    </div>
+  );
+};
+```
+
+## Testing Checklist
+
+- [ ] Modal opens and closes correctly
+- [ ] Close button works (when closable is true)
+- [ ] Esc key closes modal (when closeOnEsc is true)
+- [ ] Clicking mask closes modal (when maskClosable is true)
+- [ ] Body scroll is blocked when modal is open (when blockScroll is true)
+- [ ] Custom width applies correctly
+- [ ] Transform origin animations work correctly
+- [ ] All events fire appropriately
+- [ ] Both presets (card and dialog) render correctly
+- [ ] Custom slots render correctly
+- [ ] Footer layout options work correctly
+- [ ] Modal works with dynamic content
+- [ ] Focus is trapped within the modal when open
+- [ ] Modal is accessible via keyboard
+- [ ] High z-index content doesn't appear above modal
+
+## Notes
+- Use "card" preset for complex content or forms
+- Use "dialog" preset for simple confirmation or alerts
+- Always provide an easy way to dismiss the modal
+- Consider mobile viewport support when setting widths
+- Test modal behavior on all supported devices and screen sizes
+- Avoid multiple modals at the same time when possible
+- Use consistent animation settings for all modals in your application
+- Consider using BaseToaster for simple notifications instead of modals
+- Test focus management for accessibility compliance

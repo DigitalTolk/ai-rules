@@ -1,0 +1,40 @@
+---
+description: Informational tooltip component
+globs: components/base/BaseTooltip.vue
+alwaysApply: false
+---
+
+# BaseTooltip Component
+
+## Description
+Informational tooltip component
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| prop1 | string | - | Description of prop1 |
+| prop2 | boolean | false | Description of prop2 |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default content of the component |
+
+## Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseTooltip></BaseTooltip>
+</template>
+
+<script setup>
+import { BaseTooltip } from '@digitaltolk/ui';
+</script>
+```
+
+## Related Components
+- List of related components

@@ -1,0 +1,11 @@
+---
+description: Component for visual separation with optional text
+globs: components/base/BaseDivider.vue
+alwaysApply: false
+---
+
+---
+description:
+globs:
+alwaysApply: false
+---
