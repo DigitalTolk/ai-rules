@@ -4,32 +4,34 @@ globs: components/base/BaseAlert.vue
 alwaysApply: false
 ---
 
----
-description: 
-globs: 
-alwaysApply: false
----
 # BaseAlert Component
 
 ## Description
-BaseAlert is a component for displaying important messages, notifications, or status information to users. It supports different types for various scenarios (success, warning, error, info), can include icons, headers, and actions, and can be configured to be closable.
+BaseAlert is a versatile component for displaying important messages, notifications, or status information to users. It wraps Naive UI's n-alert component and provides a consistent interface for showing alerts with various styles, icons, and interactive elements.
 
 ## Props
 
 ### Core Props
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| type | 'default' \| 'success' \| 'info' \| 'warning' \| 'error' | 'default' | The type/style of the alert |
-| title | string | - | Title text displayed at the top of the alert |
-| closable | boolean | false | Whether the alert can be closed by the user |
-| showIcon | boolean | false | Whether to display an icon based on the alert type |
+| type | 'default' \| 'info' \| 'success' \| 'warning' \| 'error' | 'default' | The type/style of the alert |
+| title | String | undefined | Title text displayed at the top of the alert |
+| closable | Boolean | false | Whether the alert can be closed by the user |
+| showIcon | Boolean | true | Whether to display an icon based on the alert type |
 
 ### Appearance Props
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| bordered | boolean | false | Whether to show a border around the alert |
-| ghost | boolean | false | Whether to remove the background color and border |
-| themeOverrides | object | - | Custom theme overrides for styling the component |
+| bordered | Boolean | true | Whether to show a border around the alert |
+| ghost | Boolean | false | Whether to remove the background color and border |
+| themeOverrides | Object | {} | Custom theme overrides for styling the component |
+
+## Events
+
+| Event | Description |
+|-------|-------------|
+| close | Emitted when the close button is clicked (if closable is true) |
+| after-leave | Emitted after the alert's closing animation completes |
 
 ## Slots
 
@@ -40,345 +42,202 @@ BaseAlert is a component for displaying important messages, notifications, or st
 | icon | Custom icon content (overrides the default icon based on type) |
 | action | Content for the action area, typically containing buttons |
 
-## Events
+## Implementation Details
 
-| Event | Parameters | Description |
-|-------|------------|-------------|
-| close | - | Emitted when the close button is clicked |
-| after-leave | - | Emitted after the alert's leave transition completes |
+The BaseAlert component is implemented as a wrapper around Naive UI's n-alert component. It adds several features:
+
+1. **Ghost Mode**: When the `ghost` prop is true, the alert has no background or border, and the type is forced to "info" for styling purposes.
+2. **Box Shadow**: Non-ghost alerts have a subtle box shadow for better visual hierarchy.
+3. **Action Area**: The component includes a dedicated action slot for buttons or links, displayed at the end of the content.
+4. **Responsive Width**: The alert body has responsive width handling.
+5. **Custom Styling**: The component supports theme overrides for customizing the appearance.
 
 ## Examples
 
 ### Basic Alert
 ```vue
 <template>
-  <BaseAlert>
-    This is a default alert message.
+  <BaseAlert type="info">
+    This is a basic info alert
   </BaseAlert>
 </template>
-
-<script setup>
-import { BaseAlert } from '@digitaltolk/ui';
-</script>
 ```
 
-### Alert Types
-```vue
-<template>
-  <div class="alerts-container">
-    <BaseAlert type="default">
-      This is a default alert message.
-    </BaseAlert>
-    
-    <BaseAlert type="success">
-      Operation completed successfully.
-    </BaseAlert>
-    
-    <BaseAlert type="info">
-      Here is some important information.
-    </BaseAlert>
-    
-    <BaseAlert type="warning">
-      Warning: This action cannot be undone.
-    </BaseAlert>
-    
-    <BaseAlert type="error">
-      An error occurred while processing your request.
-    </BaseAlert>
-  </div>
-</template>
-
-<script setup>
-import { BaseAlert } from '@digitaltolk/ui';
-</script>
-
-<style scoped>
-.alerts-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-</style>
-```
-
-### With Icons
-```vue
-<template>
-  <div class="alerts-container">
-    <BaseAlert type="success" :showIcon="true">
-      Your profile has been updated successfully.
-    </BaseAlert>
-    
-    <BaseAlert type="info" :showIcon="true">
-      Your session will expire in 5 minutes.
-    </BaseAlert>
-    
-    <BaseAlert type="warning" :showIcon="true">
-      Your account is approaching its storage limit.
-    </BaseAlert>
-    
-    <BaseAlert type="error" :showIcon="true">
-      Failed to save changes. Please try again.
-    </BaseAlert>
-  </div>
-</template>
-
-<script setup>
-import { BaseAlert } from '@digitaltolk/ui';
-</script>
-```
-
-### With Title
+### Alert with Title
 ```vue
 <template>
   <BaseAlert 
-    type="info" 
-    title="Account Update Required" 
-    :showIcon="true"
+    type="success" 
+    title="Success!"
   >
-    We've updated our terms of service. Please review and accept the new terms to continue using our service.
+    Your operation was completed successfully
+  </BaseAlert>
+</template>
+```
+
+### Closable Warning Alert
+```vue
+<template>
+  <BaseAlert 
+    type="warning" 
+    title="Warning" 
+    closable 
+    @close="handleClose"
+  >
+    This action cannot be undone
   </BaseAlert>
 </template>
 
 <script setup>
-import { BaseAlert } from '@digitaltolk/ui';
-</script>
-```
-
-### Closable Alert
-```vue
-<template>
-  <div v-if="showAlert">
-    <BaseAlert 
-      type="success" 
-      :closable="true" 
-      @close="closeAlert"
-      :showIcon="true"
-    >
-      Your changes have been saved successfully.
-    </BaseAlert>
-  </div>
-  
-  <BaseButton v-if="!showAlert" @click="showAlert = true">
-    Show Alert
-  </BaseButton>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-import { BaseAlert, BaseButton } from '@digitaltolk/ui';
-
-const showAlert = ref(true);
-
-const closeAlert = () => {
-  showAlert.value = false;
+const handleClose = () => {
+  console.log('Alert closed');
 };
 </script>
 ```
 
-### With Custom Icon
+### Error Alert with Action Buttons
+```vue
+<template>
+  <BaseAlert type="error" title="Error">
+    Failed to save changes
+    <template #action>
+      <BaseButton size="small" @click="retry">Retry</BaseButton>
+      <BaseButton size="small" @click="cancel">Cancel</BaseButton>
+    </template>
+  </BaseAlert>
+</template>
+
+<script setup>
+const retry = () => {
+  // Retry logic
+};
+
+const cancel = () => {
+  // Cancel logic
+};
+</script>
+```
+
+### Ghost Alert (No Background)
+```vue
+<template>
+  <BaseAlert type="info" ghost>
+    This is a ghost alert with no background
+  </BaseAlert>
+</template>
+```
+
+### Custom Icon
 ```vue
 <template>
   <BaseAlert type="info">
     <template #icon>
-      <BaseIcon>tips_and_updates</BaseIcon>
+      <BaseIcon name="custom-icon" />
     </template>
-    Here's a helpful tip to improve your workflow.
+    Alert with custom icon
   </BaseAlert>
 </template>
-
-<script setup>
-import { BaseAlert, BaseIcon } from '@digitaltolk/ui';
-</script>
 ```
 
-### With Action Buttons
+### Custom Header
 ```vue
 <template>
-  <BaseAlert 
-    type="warning" 
-    title="Delete Confirmation" 
-    :showIcon="true"
-  >
-    Are you sure you want to delete this item? This action cannot be undone.
-    
-    <template #action>
-      <div class="alert-actions">
-        <BaseButton type="error" @click="deleteItem">Delete</BaseButton>
-        <BaseButton @click="cancelDelete">Cancel</BaseButton>
+  <BaseAlert type="info">
+    <template #header>
+      <div class="custom-header">
+        <BaseIcon name="info" />
+        <span>Important Information</span>
       </div>
     </template>
+    This alert has a custom header
   </BaseAlert>
 </template>
-
-<script setup>
-import { BaseAlert, BaseButton } from '@digitaltolk/ui';
-
-const deleteItem = () => {
-  // Delete logic
-  console.log('Item deleted');
-};
-
-const cancelDelete = () => {
-  // Cancel logic
-  console.log('Deletion canceled');
-};
-</script>
 
 <style scoped>
-.alert-actions {
+.custom-header {
   display: flex;
+  align-items: center;
   gap: 8px;
-  margin-top: 16px;
 }
 </style>
-```
-
-### Custom Styled Alert
-```vue
-<template>
-  <BaseAlert 
-    type="info" 
-    :bordered="true"
-    :themeOverrides="{ 
-      color: '#f0f9ff', 
-      borderColor: '#0ea5e9',
-      textColor: '#0c4a6e'
-    }"
-  >
-    <template #icon>
-      <BaseIcon>info</BaseIcon>
-    </template>
-    This alert has custom styling applied.
-  </BaseAlert>
-</template>
-
-<script setup>
-import { BaseAlert, BaseIcon } from '@digitaltolk/ui';
-</script>
 ```
 
 ## Best Practices
 
-1. **Usage Guidelines**
-   - Use alerts to communicate important information, status updates, or required actions
-   - Select the appropriate alert type based on the message's severity and purpose
-   - Keep alert messages clear, concise, and focused on a single topic
-   - Place alerts in context where they are relevant to the user's current task
+1. **Choose the Right Type**
+   - Use `default` for neutral information
+   - Use `info` for general information or tips
+   - Use `success` for successful operations
+   - Use `warning` for potential issues or cautions
+   - Use `error` for errors or failures
 
-2. **Content Writing**
-   - Write alert messages in a friendly, non-technical tone
-   - Clearly explain what happened and what action (if any) the user needs to take
-   - For error alerts, avoid blaming the user and focus on solutions
-   - Use sentence case for alert content and title text
+2. **Content Guidelines**
+   - Keep alert messages clear and concise
+   - Include specific details about what happened
+   - Provide actionable next steps when appropriate
+   - Use a friendly, non-technical tone
 
-3. **Design and Appearance**
-   - Use icons to reinforce the alert's message type
-   - Ensure sufficient contrast between the alert background and text
-   - Make action buttons clearly distinguishable and place them in a consistent order
+3. **Visual Considerations**
+   - Use icons to reinforce the message type
    - Consider making frequently dismissed alerts closable
+   - Use the action slot for related buttons rather than placing them outside the alert
+   - Maintain consistent spacing around alerts
 
 4. **Accessibility**
-   - Ensure alert colors meet WCAG contrast requirements
+   - Ensure sufficient color contrast for all alert types
    - Don't rely solely on color to communicate the alert type
-   - Include descriptive text that conveys the same information as icons
-   - Use ARIA attributes appropriately for screen readers
+   - Use appropriate ARIA attributes for screen readers
 
-## Common Patterns
+## Common Use Cases
 
-### Form Validation Alert
-```vue
-<template>
-  <BaseForm @submit.prevent="submitForm">
-    <!-- Form fields -->
-    
-    <BaseAlert 
-      v-if="formErrors.length" 
-      type="error" 
-      :showIcon="true"
-      style="margin-bottom: 16px;"
-    >
-      <div>Please correct the following errors:</div>
-      <ul class="error-list">
-        <li v-for="(error, index) in formErrors" :key="index">
-          {{ error }}
-        </li>
-      </ul>
-    </BaseAlert>
-    
-    <BaseButton type="primary" submit>Submit</BaseButton>
-  </BaseForm>
-</template>
+1. **Form Validation Errors**
+   ```vue
+   <BaseAlert 
+     v-if="formErrors.length" 
+     type="error" 
+     title="Form Validation Error"
+   >
+     <ul>
+       <li v-for="error in formErrors" :key="error">{{ error }}</li>
+     </ul>
+   </BaseAlert>
+   ```
 
-<style scoped>
-.error-list {
-  margin-top: 8px;
-  margin-bottom: 0;
-  padding-left: 20px;
-}
-</style>
-```
+2. **Success Confirmation**
+   ```vue
+   <BaseAlert 
+     type="success" 
+     closable 
+     @close="hideSuccessMessage"
+   >
+     Your changes have been saved successfully
+   </BaseAlert>
+   ```
 
-### Status Update Alert
-```vue
-<template>
-  <BaseAlert 
-    v-if="status" 
-    :type="status.type" 
-    :showIcon="true" 
-    :closable="true"
-    @close="clearStatus"
-  >
-    {{ status.message }}
-  </BaseAlert>
-</template>
+3. **System Notification**
+   ```vue
+   <BaseAlert 
+     type="info" 
+     title="System Maintenance"
+   >
+     The system will be unavailable on Sunday from 2-4 AM for scheduled maintenance
+   </BaseAlert>
+   ```
 
-<script setup>
-import { ref } from 'vue';
-import { BaseAlert } from '@digitaltolk/ui';
+4. **Warning with Actions**
+   ```vue
+   <BaseAlert type="warning" title="Session Expiring">
+     Your session will expire in 5 minutes
+     <template #action>
+       <BaseButton size="small" @click="extendSession">
+         Extend Session
+       </BaseButton>
+     </template>
+   </BaseAlert>
+   ```
 
-const status = ref({
-  type: 'success',
-  message: 'Your profile has been updated successfully.'
-});
-
-const clearStatus = () => {
-  status.value = null;
-};
-</script>
-```
-
-### Banner Alert
-```vue
-<template>
-  <BaseAlert 
-    type="warning" 
-    :showIcon="true" 
-    :bordered="false"
-    style="border-radius: 0;"
-  >
-    <template #header>
-      <strong>Service Maintenance Notice</strong>
-    </template>
-    Our system will be undergoing maintenance on Saturday, June 12 from 2:00 AM to 4:00 AM UTC. Some services may be temporarily unavailable.
-  </BaseAlert>
-</template>
-```
-
-## Related Components
-
-- **BaseToast** - For temporary, non-blocking notifications
-- **BaseModal** - For more intrusive messages requiring user action
-- **BaseNotification** - For corner-positioned, timed notifications
-- **BasePopconfirm** - For confirmation messages with action buttons
-
-## Testing Checklist
-
-- Verify that all alert types display correctly with appropriate colors
-- Test that icons appear when showIcon is enabled
-- Check that closable alerts have a close button that works correctly
-- Verify that the after-leave event fires after closing transitions
-- Test that all slots (default, header, icon, action) render content correctly
-- Ensure alerts are readable with custom theme overrides
-- Check that long content wraps appropriately within the alert
-- Verify that the bordered prop applies a border when enabled
+## Notes
+- When `ghost` is true, the alert type is forced to "info" for styling purposes
+- The alert body has padding-right of 50px to accommodate the close button
+- Action buttons are displayed with 10px spacing between them
+- Non-ghost alerts have a subtle box shadow for better visual hierarchy
