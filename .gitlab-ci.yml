@@ -1,0 +1,23 @@
+# Minimal GitLab CI/CD Configuration
+stages:
+  - build
+  - deploy
+
+# Skip all stages by default
+.skip_all_jobs: &skip_all_jobs
+  rules:
+    - when: never
+
+# Build stage (skipped)
+build:
+  <<: *skip_all_jobs
+  stage: build
+  script:
+    - echo "Build stage would run here"
+
+# Deploy stage (skipped)
+deploy:
+  <<: *skip_all_jobs
+  stage: deploy
+  script:
+    - echo "Deploy stage would run here"
