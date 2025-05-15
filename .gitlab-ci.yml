@@ -1,23 +1,14 @@
 # Minimal GitLab CI/CD Configuration
 stages:
-  - build
-  - deploy
+  - publish
 
-# Skip all stages by default
-.skip_all_jobs: &skip_all_jobs
+# Publish stage
+publish:
+  stage: publish
+  script:
+    - echo "Publish stage would run here"
   rules:
-    - when: never
-
-# Build stage (skipped)
-build:
-  <<: *skip_all_jobs
-  stage: build
-  script:
-    - echo "Build stage would run here"
-
-# Deploy stage (skipped)
-deploy:
-  <<: *skip_all_jobs
-  stage: deploy
-  script:
-    - echo "Deploy stage would run here"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: always
