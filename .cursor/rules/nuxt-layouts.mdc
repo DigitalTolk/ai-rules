@@ -1,5 +1,295 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+# Nuxt Layouts
+
+Layouts are a powerful feature in Nuxt that allow you to define reusable page templates. They are especially useful for elements that appear on multiple pages, such as headers, footers, and navigation.
+
+## Layout Directory Structure
+
+```
+layouts/
+├── default.vue         # The default layout (applied if none specified)
+├── admin.vue           # Admin panel layout
+├── auth.vue            # Authentication pages layout
+├── custom.vue          # Any other custom layouts
+└── README.md           # Documentation for layouts
+```
+
+## Creating Layouts
+
+Layouts should be placed in the `layouts/` directory and exported as Vue components:
+
+```vue
+<!-- layouts/default.vue -->
+<template>
+  <div class="layout default-layout">
+    <AppHeader />
+    <main>
+      <slot />  <!-- This is where page content will be inserted -->
+    </main>
+    <AppFooter />
+  </div>
+</template>
+
+<script setup lang="ts">
+// Layout-specific logic
+</script>
+
+<style scoped>
+/* Layout-specific styles */
+</style>
+```
+
+## Using Layouts
+
+### Default Layout
+
+The `default.vue` layout is applied automatically to all pages unless another layout is specified.
+
+### Custom Layouts
+
+To use a custom layout, specify it in the page using `definePageMeta`:
+
+```vue
+<!-- pages/admin/dashboard.vue -->
+<script setup lang="ts">
+definePageMeta({
+  layout: 'admin',
+})
+</script>
+
+<template>
+  <div>
+    <!-- Page content -->
+  </div>
+</template>
+```
+
+### Disabling Layouts
+
+To disable layouts for a specific page:
+
+```vue
+<script setup>
+definePageMeta({
+  layout: false,
+})
+</script>
+```
+
+## Dynamic Layouts
+
+You can change layouts dynamically based on conditions:
+
+```vue
+<script setup>
+const route = useRoute()
+const layout = computed(() => {
+  return route.path.startsWith('/admin') ? 'admin' : 'default'
+})
+
+definePageMeta({
+  layout: false, // We'll handle layout ourselves
+})
+</script>
+
+<template>
+  <NuxtLayout :name="layout">
+    <!-- Page content -->
+  </NuxtLayout>
+</template>
+```
+
+## Nested Layouts
+
+For complex pages, you can nest layouts using the `<NuxtLayout>` component:
+
+```vue
+<template>
+  <NuxtLayout name="default">
+    <NuxtLayout name="custom">
+      <!-- Page content -->
+    </NuxtLayout>
+  </NuxtLayout>
+</template>
+```
+
+## Layout Best Practices
+
+1. **Keep layouts focused on structure**
+   - Layouts should primarily handle structure and positioning
+   - Avoid placing business logic in layouts
+   - Use slots for content injection
+
+2. **Use consistent naming**
+   - Use descriptive, purpose-based names (e.g., `admin.vue`, `auth.vue`)
+   - Follow kebab-case convention for layout files
+
+3. **Styling considerations**
+   - Use scoped styles when appropriate
+   - Define layout-specific CSS variables
+   - Consider using utility classes for common layout patterns
+
+4. **Optimize for responsiveness**
+   - Ensure layouts work well on all device sizes
+   - Use responsive design patterns (CSS Grid, Flexbox)
+   - Test layouts on various viewport sizes
+
+5. **Performance**
+   - Avoid heavy computations in layout components
+   - Consider using async components for layout parts if they're complex
+
+## Layout Structure Template
+
+```vue
+<!-- layouts/example.vue -->
+<template>
+  <div class="layout-container">
+    <!-- Header section -->
+    <header class="layout-header">
+      <AppHeader />
+    </header>
+
+    <!-- Main content area -->
+    <main class="layout-content">
+      <slot /> <!-- Page content injected here -->
+    </main>
+
+    <!-- Optional sidebar -->
+    <aside v-if="showSidebar" class="layout-sidebar">
+      <AppSidebar />
+    </aside>
+
+    <!-- Footer section -->
+    <footer class="layout-footer">
+      <AppFooter />
+    </footer>
+  </div>
+</template>
+
+<script setup lang="ts">
+// Props for customizing layout behavior
+const props = defineProps({
+  showSidebar: {
+    type: Boolean,
+    default: true
+  }
+})
+
+// Layout-specific composables
+const { isAuthenticated } = useAuth()
+</script>
+
+<style scoped>
+.layout-container {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "content sidebar"
+    "footer footer";
+  grid-template-columns: 1fr auto;
+  min-height: 100vh;
+}
+
+.layout-header {
+  grid-area: header;
+}
+
+.layout-content {
+  grid-area: content;
+  padding: 1rem;
+}
+
+.layout-sidebar {
+  grid-area: sidebar;
+  width: 250px;
+}
+
+.layout-footer {
+  grid-area: footer;
+}
+
+@media (max-width: 768px) {
+  .layout-container {
+    grid-template-areas:
+      "header"
+      "content"
+      "sidebar"
+      "footer";
+    grid-template-columns: 1fr;
+  }
+  
+  .layout-sidebar {
+    width: 100%;
+  }
+}
+</style>
+```
+
+## Error Layout Handling
+
+For custom error pages, you can create a special error layout:
+
+```vue
+<!-- layouts/error.vue -->
+<template>
+  <div class="error-layout">
+    <AppHeader minimal />
+    <main>
+      <slot />
+    </main>
+    <AppFooter minimal />
+  </div>
+</template>
+```
+
+Then in your error.vue:
+
+```vue
+<!-- error.vue -->
+<script setup>
+definePageMeta({
+  layout: 'error',
+})
+
+const error = useError()
+</script>
+
+<template>
+  <div class="error-container">
+    <h1>{{ error.statusCode }}</h1>
+    <p>{{ error.message }}</p>
+    <NuxtLink to="/">Return Home</NuxtLink>
+  </div>
+</template>
+```
+
+## Passing Props to Layouts
+
+You can pass props to layouts using the `<NuxtLayout>` component:
+
+```vue
+<template>
+  <NuxtLayout name="default" :show-sidebar="false">
+    <!-- Page content -->
+  </NuxtLayout>
+</template>
+```
+
+In the layout:
+
+```vue
+<script setup>
+const props = defineProps({
+  showSidebar: {
+    type: Boolean,
+    default: true
+  }
+})
+</script>
+```
+
+This comprehensive approach to layouts ensures consistency across your application while maintaining flexibility for different page types and user experiences.

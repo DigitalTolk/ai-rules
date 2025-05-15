@@ -1,0 +1,645 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Nuxt 3 README Templates
+
+This document provides example README templates for each major directory in a Nuxt 3 project structure. Use these templates as a starting point when creating documentation for your project.
+
+## Root README Template
+
+```markdown
+# Project Name
+
+Brief description of the project, its purpose, and main features.
+
+## Tech Stack
+
+- Nuxt 3
+- Vue 3
+- TypeScript
+- [Other major technologies]
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16+)
+- pnpm (or npm/yarn)
+
+### Installation
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+```
+
+## Development Guidelines
+
+- Link to coding standards document
+- Brief explanation of project architecture
+- Important considerations for developers
+
+## Available Scripts
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm preview` - Preview production build
+- [Other available scripts]
+
+## Deployment
+
+Instructions for deploying the application.
+
+## Project Structure
+
+Overview of the main directories and their purposes.
+```
+
+## Components Directory README
+
+```markdown
+# Components
+
+This directory contains all Vue components used throughout the application.
+
+## Organization
+
+- `ui/` - Core UI components (buttons, cards, inputs, etc.)
+- `common/` - App-wide reusable components (header, footer, etc.)
+- `[feature]/` - Feature-specific components
+
+## Naming Conventions
+
+- Use PascalCase for component files (e.g., `Button.vue`)
+- Prefix UI components with `Ui` (e.g., `UiButton.vue`)
+- Prefix common components with `App` (e.g., `AppHeader.vue`)
+- Use descriptive, domain-specific names for feature components
+
+## Guidelines
+
+- Keep components focused on a single responsibility
+- Document props with JSDoc comments
+- Use TypeScript for prop definitions
+- Follow the project's style guide for component structure
+- Co-locate component-specific types, utils, and tests when appropriate
+
+## Example Structure
+
+```
+components/
+├── ui/
+│   ├── UiButton.vue
+│   ├── UiCard.vue
+│   └── UiInput.vue
+├── common/
+│   ├── AppHeader.vue
+│   ├── AppFooter.vue
+│   └── AppSidebar.vue
+└── dashboard/
+    ├── DashboardCard.vue
+    ├── DashboardStats.vue
+    └── DashboardChart.vue
+```
+
+## Usage Examples
+
+```vue
+<template>
+  <UiCard>
+    <template #header>
+      <h2>Card Title</h2>
+    </template>
+    <div>Card content here</div>
+    <template #footer>
+      <UiButton>Action</UiButton>
+    </template>
+  </UiCard>
+</template>
+```
+```
+
+## Composables Directory README
+
+```markdown
+# Composables
+
+This directory contains Vue composables (reusable logic) for the application.
+
+## What are Composables?
+
+Composables are functions that leverage Vue's Composition API to encapsulate and reuse stateful logic. They are the equivalent of React hooks in the Vue ecosystem.
+
+## Naming Conventions
+
+- All composables should start with `use` prefix (e.g., `useAuth.ts`)
+- Use camelCase for file naming
+- For complex composables, create a directory with the same name and an index.ts file
+
+## Organization
+
+- Root level for application-wide composables
+- Subdirectories for feature-specific or complex composables
+
+## Guidelines
+
+- Document parameters and return values
+- Use TypeScript for type safety
+- Keep composables focused on a specific concern
+- Follow the Single Responsibility Principle
+- Include error handling for operations that might fail
+
+## Example Usage
+
+```typescript
+// useCounter.ts
+export function useCounter(initialValue = 0) {
+  const count = ref(initialValue)
+  
+  function increment() {
+    count.value++
+  }
+  
+  function decrement() {
+    count.value--
+  }
+  
+  return {
+    count,
+    increment,
+    decrement
+  }
+}
+
+// In a component
+const { count, increment } = useCounter(10)
+```
+```
+
+## Pages Directory README
+
+```markdown
+# Pages
+
+This directory contains all the pages/routes of your Nuxt application. Nuxt automatically creates routes based on the file structure in this directory.
+
+## Routing
+
+- Each `.vue` file becomes a route
+- `index.vue` files become the root of a route
+- Folders create nested routes
+- Dynamic parameters are specified with `[param].vue` syntax
+- Use kebab-case for file names (e.g., `user-profile.vue`)
+
+## Organization
+
+- Group related pages in subdirectories
+- Name pages according to their purpose
+
+## Structure
+
+```
+pages/
+├── index.vue                # / (home page)
+├── about.vue                # /about
+├── login.vue                # /login
+├── dashboard/
+│   ├── index.vue            # /dashboard
+│   └── settings.vue         # /dashboard/settings
+└── users/
+    ├── index.vue            # /users (list view)
+    └── [id].vue             # /users/:id (detail view)
+```
+
+## Guidelines
+
+- Use `definePageMeta()` for page-specific metadata
+- Implement SEO with `useHead()` or `useSeoMeta()`
+- Handle loading and error states appropriately
+- Use server-side data fetching when possible with `useAsyncData()` or `useFetch()`
+
+## Example
+
+```vue
+<script setup lang="ts">
+definePageMeta({
+  layout: 'default',
+  middleware: ['auth']
+})
+
+useSeoMeta({
+  title: 'Dashboard',
+  description: 'User dashboard page'
+})
+
+const { data, pending, error } = await useFetch('/api/dashboard-data')
+</script>
+
+<template>
+  <div>
+    <h1>Dashboard</h1>
+    <p v-if="pending">Loading...</p>
+    <p v-else-if="error">Error: {{ error }}</p>
+    <DashboardContent v-else :data="data" />
+  </div>
+</template>
+```
+```
+
+## Layouts Directory README
+
+```markdown
+# Layouts
+
+This directory contains layout components that wrap your pages. Layouts are used for elements that appear on multiple pages, such as navigation, headers, and footers.
+
+## Usage
+
+Layouts are applied to pages using the `definePageMeta()` function:
+
+```vue
+<script setup>
+definePageMeta({
+  layout: 'default'
+})
+</script>
+```
+
+## Available Layouts
+
+- `default.vue` - The default layout used if none is specified
+- `admin.vue` - Layout for admin pages
+- [Other layouts]
+
+## Creating Layouts
+
+- Layouts should focus on structure rather than page-specific logic
+- Use slots to inject page content
+- Keep layouts simple and maintainable
+
+## Example Layout
+
+```vue
+<!-- layouts/default.vue -->
+<template>
+  <div class="layout">
+    <AppHeader />
+    <main>
+      <slot /> <!-- Page content goes here -->
+    </main>
+    <AppFooter />
+  </div>
+</template>
+```
+```
+
+## Server Directory README
+
+```markdown
+# Server
+
+This directory contains server-side code, including API endpoints, server middleware, and utilities.
+
+## Structure
+
+- `api/` - API endpoints
+- `middleware/` - Server middleware
+- `routes/` - Custom server routes
+- `utils/` - Server utilities
+
+## API Endpoints
+
+API endpoints are automatically created from files in the `api/` directory using Nuxt's server engine.
+
+### Example Structure
+
+```
+server/
+├── api/
+│   ├── auth.ts       # /api/auth
+│   ├── users.ts      # /api/users
+│   └── products/
+│       ├── index.ts  # /api/products
+│       └── [id].ts   # /api/products/:id
+```
+
+### Example API Endpoint
+
+```typescript
+// server/api/users.ts
+export default defineEventHandler(async (event) => {
+  // Get query parameters
+  const query = getQuery(event)
+  
+  // Business logic
+  const users = await db.getUsers(query)
+  
+  // Return data
+  return {
+    users
+  }
+})
+```
+
+## Middleware
+
+Server middleware runs on every request before reaching routes or API endpoints.
+
+```typescript
+// server/middleware/auth.ts
+export default defineEventHandler((event) => {
+  // Check authentication
+  // Modify event or headers
+  // Block requests or redirect
+})
+```
+
+## Best Practices
+
+- Validate inputs using appropriate methods
+- Implement consistent error handling
+- Use environment variables for configuration
+- Document API endpoints with comments
+- Keep middleware focused on a single responsibility
+```
+
+## Stores Directory README
+
+```markdown
+# Stores
+
+This directory contains Pinia stores for state management. Each store should focus on a specific domain or feature.
+
+## Organization
+
+- One store per feature or domain
+- Use camelCase for store files
+
+## Naming Conventions
+
+- Store files should be named after the domain they manage (e.g., `user.ts`, `cart.ts`)
+- Use descriptive action and getter names
+
+## Guidelines
+
+- Use TypeScript interfaces for state
+- Keep state normalized and flat when possible
+- Avoid storing redundant or derived data
+- Document complex state or actions
+
+## Example Store
+
+```typescript
+// stores/counter.ts
+import { defineStore } from 'pinia'
+
+interface CounterState {
+  count: number
+  lastChanged: Date | null
+}
+
+export const useCounterStore = defineStore('counter', {
+  state: (): CounterState => ({
+    count: 0,
+    lastChanged: null
+  }),
+  
+  getters: {
+    doubleCount: (state) => state.count * 2
+  },
+  
+  actions: {
+    increment() {
+      this.count++
+      this.lastChanged = new Date()
+    },
+    decrement() {
+      this.count--
+      this.lastChanged = new Date()
+    }
+  }
+})
+```
+
+## Usage Example
+
+```vue
+<script setup>
+import { useCounterStore } from '@/stores/counter'
+
+const counter = useCounterStore()
+</script>
+
+<template>
+  <div>
+    <p>Count: {{ counter.count }}</p>
+    <p>Double Count: {{ counter.doubleCount }}</p>
+    <button @click="counter.increment()">Increment</button>
+  </div>
+</template>
+```
+```
+
+## Assets Directory README
+
+```markdown
+# Assets
+
+This directory contains uncompiled assets such as images, fonts, and styles that will be processed by the build tool.
+
+## Organization
+
+- Group assets by type or feature
+- Use lowercase, kebab-case for filenames
+
+## Structure Example
+
+```
+assets/
+├── images/
+│   ├── logo.svg
+│   └── background.jpg
+├── fonts/
+│   └── roboto/
+├── styles/
+│   ├── variables.scss
+│   ├── main.scss
+│   └── components/
+└── icons/
+    └── ...
+```
+
+## Usage
+
+- Import or reference assets in your components:
+
+```vue
+<template>
+  <img src="~/assets/images/logo.svg" alt="Logo" />
+</template>
+```
+
+```scss
+// In a style block
+@import "~/assets/styles/variables.scss";
+
+.element {
+  background-image: url("~/assets/images/background.jpg");
+}
+```
+
+## Guidelines
+
+- Optimize images before adding them
+- Use SVG for icons when possible
+- Organize CSS/SCSS files logically
+- Consider using CSS variables for theming
+```
+
+## Types Directory README
+
+```markdown
+# Types
+
+This directory contains TypeScript type definitions for the application. It helps maintain type safety across the codebase.
+
+## Organization
+
+- Group types by domain or feature
+- Use descriptive names that reflect the data structure
+
+## Naming Conventions
+
+- Use PascalCase for type and interface names
+- Use singular form for type names
+- Suffix interfaces with descriptive terms when appropriate (e.g., `UserResponse`, `ProductPayload`)
+
+## Examples
+
+```typescript
+// types/user.ts
+export interface User {
+  id: string
+  name: string
+  email: string
+  role: 'admin' | 'user'
+  createdAt: string
+}
+
+export type UserCreatePayload = Omit<User, 'id' | 'createdAt'>
+
+export interface UserResponse {
+  user: User
+  token: string
+}
+```
+
+## Usage
+
+```typescript
+// Importing types in components or other files
+import type { User, UserCreatePayload } from '~/types/user'
+
+const user: User = {
+  id: '123',
+  name: 'John Doe',
+  email: 'john@example.com',
+  role: 'user',
+  createdAt: '2023-01-01'
+}
+```
+
+## Best Practices
+
+- Export types from dedicated type files
+- Keep types DRY (Don't Repeat Yourself)
+- Use utility types (Partial, Omit, Pick) when appropriate
+- Document complex types with JSDoc comments
+```
+
+## Plugins Directory README
+
+```markdown
+# Plugins
+
+This directory contains Nuxt plugins that extend the functionality of your application.
+
+## Purpose
+
+Plugins allow you to:
+- Add global components
+- Register libraries
+- Inject functionality into the Vue instance
+- Run code before the application mounts
+
+## Naming Conventions
+
+- Use kebab-case for plugin files (e.g., `vue-query.ts`)
+- Use descriptive names that reflect the plugin's purpose
+
+## Organization
+
+- Place each plugin in a separate file
+- For complex plugins, create a directory with an index.ts file
+
+## Registering Plugins
+
+Plugins are automatically registered by Nuxt when placed in this directory. You can also configure them in `nuxt.config.ts`:
+
+```typescript
+export default defineNuxtConfig({
+  plugins: [
+    '~/plugins/my-plugin.ts',
+    { src: '~/plugins/client-only.ts', mode: 'client' }
+  ]
+})
+```
+
+## Examples
+
+### Global Plugin
+
+```typescript
+// plugins/toast.ts
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.provide('toast', (message: string) => {
+    // Show toast implementation
+    console.log(`Toast: ${message}`)
+  })
+})
+```
+
+### Client-Only Plugin
+
+```typescript
+// plugins/analytics.client.ts
+export default defineNuxtPlugin(() => {
+  // This runs only in the browser
+})
+```
+
+## Usage in Components
+
+```vue
+<script setup>
+const { $toast } = useNuxtApp()
+
+function showMessage() {
+  $toast('Hello from plugin!')
+}
+</script>
+```
+
+## Best Practices
+
+- Keep plugins focused on a single responsibility
+- Document the API provided by your plugins
+- Use TypeScript for type safety
+- Consider performance implications for client-side plugins
+```
+
+Each of these README templates should be customized to fit the specific needs and conventions of your project.

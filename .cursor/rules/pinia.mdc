@@ -1,5 +1,5 @@
 ---
-description: Use this rule whenever we need to manage the app's global state 
+description: Use this rule whenever we need to manage the app's global state
 globs: 
 alwaysApply: false
 ---
@@ -13,94 +13,97 @@ glob: "**/stores/**/*.{js,ts}"
 
 Pinia is Vue's official state management library that provides a simple and type-safe way to share state between components. This document outlines our conventions for creating and using Pinia stores in the application.
 
-## Store Structure
-
-Stores are located in the `/stores` directory and follow a consistent naming pattern:
+## Store Directory Structure
 
 ```
-/stores
-  useUserStore.ts           # User-related state
-  useAuthStore.ts           # Authentication state
-  useCartStore.ts           # Shopping cart state
-  useSettingsStore.ts       # Application settings
-  /modules                  # Optional folder for grouped stores
-    useProductStore.ts      # Product-related state
-    useCategoryStore.ts     # Category-related state
+stores/
+├── index.ts               # Re-exports, store setup
+├── user.ts                # User store
+├── auth.ts                # Authentication store
+├── settings.ts            # Application settings store
+└── features/              # Feature-specific stores
+    ├── cart.ts            # E-commerce cart store
+    └── notifications.ts   # Notifications store
 ```
 
-## Creating Stores
+## Store Creation Patterns
 
-Each store is defined using the `defineStore` function with a unique ID and should use the `use[Name]Store` naming convention:
+### Option Stores (Recommended)
 
-```ts
-// stores/useUserStore.ts
+The Options API style is more structured and often preferred for complex stores:
+
+```typescript
+// stores/user.ts
 import { defineStore } from 'pinia'
-import { User } from '~/types'
+import type { User } from '~/types'
+
+interface UserState {
+  currentUser: User | null
+  isLoading: boolean
+  error: string | null
+}
 
 export const useUserStore = defineStore('user', {
-  // State (reactive data)
-  state: () => ({
-    user: null as User | null,
+  // State
+  state: (): UserState => ({
+    currentUser: null,
     isLoading: false,
-    error: null as string | null,
+    error: null
   }),
   
-  // Getters (computed properties)
+  // Getters (computed values)
   getters: {
-    isAuthenticated: (state) => !!state.user,
-    fullName: (state) => state.user ? `${state.user.firstName} ${state.user.lastName}` : '',
-    // Getter using other getters
-    greeting: (state) => {
-      return `Hello, ${state.user?.firstName || 'Guest'}!`
-    },
+    isLoggedIn: (state) => !!state.currentUser,
+    username: (state) => state.currentUser?.name || 'Guest',
+    fullName: (state) => {
+      const user = state.currentUser
+      if (!user) return ''
+      return `${user.firstName} ${user.lastName}`
+    }
   },
   
-  // Actions (methods that can include async operations)
+  // Actions (methods)
   actions: {
     async fetchUser() {
       this.isLoading = true
       this.error = null
       
       try {
-        const response = await $fetch('/api/user/profile')
-        this.user = response
-      } catch (err) {
-        this.error = 'Failed to fetch user profile'
-        console.error(err)
+        const user = await $fetch('/api/user')
+        this.currentUser = user
+      } catch (error) {
+        this.error = error.message || 'Failed to fetch user'
+        console.error(error)
       } finally {
         this.isLoading = false
       }
     },
     
-    updateUser(userData: Partial<User>) {
-      this.user = { ...this.user, ...userData } as User
-    },
-    
     logout() {
-      this.user = null
-    },
-  },
+      this.currentUser = null
+      // Additional logout logic
+    }
+  }
 })
 ```
 
-## Option vs. Composition API for Stores
+### Setup Stores (Alternative)
 
-You can define stores using either the Options API or Composition API. For consistency, we prefer the composition API style:
+Setup stores use the Composition API style and can be more concise:
 
-```ts
-// stores/useCounterStore.ts (Composition API style)
+```typescript
+// stores/counter.ts
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 
 export const useCounterStore = defineStore('counter', () => {
-  // State (refs)
+  // State
   const count = ref(0)
   const lastUpdated = ref(new Date())
   
-  // Getters (computed)
+  // Getters
   const doubleCount = computed(() => count.value * 2)
   
-  // Actions (functions)
+  // Actions
   function increment() {
     count.value++
     lastUpdated.value = new Date()
@@ -112,7 +115,6 @@ export const useCounterStore = defineStore('counter', () => {
   }
   
   return {
-    // Expose state, getters, and actions
     count,
     lastUpdated,
     doubleCount,
@@ -124,170 +126,277 @@ export const useCounterStore = defineStore('counter', () => {
 
 ## Using Stores in Components
 
-Import and use stores in your components:
-
 ```vue
 <script setup>
-import { useUserStore } from '~/stores/useUserStore'
-import { storeToRefs } from 'pinia'
+import { useUserStore } from '~/stores/user'
 
-// Access the store
+// Initialize store
 const userStore = useUserStore()
 
-// Extract reactive state using storeToRefs
-// (This maintains reactivity, unlike destructuring directly)
-const { user, isLoading, error } = storeToRefs(userStore)
+// Access state and getters
+const isLoggedIn = computed(() => userStore.isLoggedIn)
+const username = computed(() => userStore.username)
 
-// Actions can be destructured directly
-const { fetchUser, updateUser, logout } = userStore
+// Call actions
+function fetchUserData() {
+  userStore.fetchUser()
+}
 
-// Call actions as needed
+// Watch for store changes
+watch(() => userStore.currentUser, (newUser) => {
+  if (newUser) {
+    console.log('User logged in:', newUser.name)
+  }
+})
+
+// Use onMounted lifecycle hook to fetch data
 onMounted(() => {
-  fetchUser()
+  if (!userStore.currentUser) {
+    userStore.fetchUser()
+  }
 })
 </script>
 
 <template>
   <div>
-    <div v-if="isLoading">Loading...</div>
-    <div v-else-if="error">{{ error }}</div>
-    <div v-else-if="user">
-      <h1>Welcome, {{ user.firstName }}!</h1>
-      <button @click="logout">Logout</button>
-    </div>
+    <p v-if="userStore.isLoading">Loading user...</p>
+    <p v-else-if="userStore.error">Error: {{ userStore.error }}</p>
     <div v-else>
-      <h1>Please log in</h1>
+      <h2>Welcome, {{ username }}</h2>
+      <button @click="userStore.logout">Logout</button>
     </div>
   </div>
 </template>
 ```
 
-## Persisting State
+## Store Organization and Design Principles
 
-For persisting state between page refreshes, use the `pinia-plugin-persistedstate` plugin:
+### 1. Store Naming
 
-```ts
-// plugins/pinia-persist.ts
-import { defineNuxtPlugin } from 'nuxt/app'
-import { createPinia } from 'pinia'
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+- Use the `use` prefix for store functions (e.g., `useUserStore`)
+- Name store files after their domain (e.g., `user.ts`, `auth.ts`)
 
-export default defineNuxtPlugin(({ $pinia }) => {
-  $pinia.use(piniaPluginPersistedstate)
-})
-```
+### 2. State Design
 
-Then configure individual stores to use persistence:
+- Keep state normalized and flat when possible
+- Use TypeScript interfaces to define state shape
+- Initialize with sensible defaults
+- Avoid redundant or derived data that can be computed
 
-```ts
-// stores/useSettingsStore.ts
+### 3. Getters
+
+- Use getters for derived state
+- Keep getters pure and focused
+- Use TypeScript for better type inference
+- Consider memoization for expensive computations
+
+### 4. Actions
+
+- Use actions for all state mutations
+- Handle asynchronous operations in actions
+- Implement proper error handling
+- Use actions to coordinate complex state changes
+
+### 5. Modules and Namespacing
+
+- Divide large stores into logical domains
+- Use Pinia's automatic namespacing
+- Consider store composition for reusable store patterns
+
+## Advanced Patterns
+
+### 1. Store Composition
+
+Compose stores to reuse functionality:
+
+```typescript
+// stores/features/todoList.ts
 import { defineStore } from 'pinia'
+import { useUserStore } from '../user'
 
-export const useSettingsStore = defineStore('settings', {
+export const useTodoStore = defineStore('todo', {
   state: () => ({
-    theme: 'light',
-    fontSize: 'medium',
-    notifications: true,
-  }),
-  
-  // ... getters and actions
-  
-  // Configure persistence
-  persist: {
-    storage: persistedState.localStorage,
-    paths: ['theme', 'fontSize'], // Only persist specific paths
-  },
-})
-```
-
-## Store Modules and Organization
-
-For large applications, organize stores into modules:
-
-```ts
-// stores/modules/products/useProductStore.ts
-import { defineStore } from 'pinia'
-import { Product } from '~/types'
-
-export const useProductStore = defineStore('products', {
-  state: () => ({
-    products: [] as Product[],
-    selectedProduct: null as Product | null,
-    // ...
-  }),
-  // ... getters and actions
-})
-```
-
-## Interacting Between Stores
-
-Stores can access and interact with each other:
-
-```ts
-// stores/useCartStore.ts
-import { defineStore } from 'pinia'
-import { useProductStore } from './modules/products/useProductStore'
-import { useUserStore } from './useUserStore'
-
-export const useCartStore = defineStore('cart', {
-  state: () => ({
-    items: [],
-    // ...
+    todos: []
   }),
   
   actions: {
-    async checkout() {
+    async fetchTodos() {
       const userStore = useUserStore()
-      const productStore = useProductStore()
-      
-      if (!userStore.isAuthenticated) {
-        throw new Error('User must be logged in to checkout')
+      if (!userStore.isLoggedIn) {
+        throw new Error('User must be logged in')
       }
       
-      // Process checkout using data from multiple stores
-      // ...
-      
-      // Update other stores as needed
-      productStore.updateInventory(this.items)
-      this.clearCart()
-    },
-    
-    clearCart() {
-      this.items = []
+      // Fetch todos using the current user's ID
+      const todos = await $fetch(`/api/users/${userStore.currentUser.id}/todos`)
+      this.todos = todos
     }
   }
 })
 ```
 
-## Best Practices
+### 2. Store Reset
 
-1. **Keep stores focused**
-   - Each store should manage a single domain of state
-   - Split large stores into smaller domain-specific ones
+Reset store state when needed:
 
-2. **Use appropriate state type**
-   - Use the correct data types for state properties
-   - Provide default values for all state properties
-   - Use TypeScript interfaces for complex state objects
+```typescript
+// stores/index.ts
+import { createPinia } from 'pinia'
 
-3. **Avoid redundant state**
-   - Don't duplicate state that exists in other stores
-   - Use getters to derive state rather than duplicating it
-   - Reference other stores when needed rather than copying data
+export function resetStores() {
+  const pinia = useNuxtApp().$pinia
+  
+  // Use $reset on all registered stores
+  pinia._s.forEach((store) => {
+    if (store.$reset) {
+      store.$reset()
+    }
+  })
+}
+```
 
-4. **Minimize state mutations**
-   - Prefer immutable patterns when updating state
-   - Use reset() method to reset state when needed
+### 3. Store Persistence
 
-5. **Handle async operations properly**
-   - Always handle loading states and errors in actions
-   - Use try/catch blocks for error handling in async actions
+Persist store state across page reloads:
 
-6. **Use storeToRefs for reactivity**
-   - Always use storeToRefs when destructuring store state or getters
-   - Don't destructure state or getters directly
+```typescript
+// plugins/pinia-persist.ts
+import { defineNuxtPlugin } from 'nuxt/app'
+import { createPinia } from 'pinia'
+import { PiniaPluginContext } from 'pinia'
 
-7. **Be selective with persistence**
-   - Only persist data that needs to survive page refreshes
-   - Don't persist sensitive information in localStorage
-   - Be specific about which properties to persist
+function piniaLocalStoragePlugin({ store }: PiniaPluginContext) {
+  // Load persistent state when store is initialized
+  const storedState = localStorage.getItem(`pinia-${store.$id}`)
+  
+  if (storedState) {
+    store.$patch(JSON.parse(storedState))
+  }
+  
+  // Save state whenever it changes
+  store.$subscribe((mutation, state) => {
+    localStorage.setItem(`pinia-${store.$id}`, JSON.stringify(state))
+  })
+}
+
+export default defineNuxtPlugin(({ vueApp }) => {
+  const pinia = createPinia()
+  pinia.use(piniaLocalStoragePlugin)
+  vueApp.use(pinia)
+})
+```
+
+## Best Practices for Nuxt Applications
+
+### 1. Hydration
+
+Pinia works well with Nuxt's SSR and hydration process. To avoid hydration mismatches:
+
+- Initialize stores with default values
+- Handle undefined states gracefully
+- Use `nuxt-app` plugin hooks for store initialization
+
+### 2. Server-Side State
+
+When using stores in SSR context:
+
+```typescript
+// Handle server-side state initialization
+export const useProductStore = defineStore('products', {
+  state: () => ({
+    products: [],
+    loaded: false
+  }),
+  
+  actions: {
+    async fetchProducts() {
+      if (this.loaded) return
+      
+      const products = await $fetch('/api/products')
+      this.products = products
+      this.loaded = true
+    }
+  }
+})
+```
+
+### 3. Type Safety
+
+Leverage TypeScript for type-safe stores:
+
+```typescript
+// types/store.ts
+export interface User {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  role: 'admin' | 'user'
+}
+
+export interface AuthState {
+  user: User | null
+  token: string | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  error: string | null
+}
+```
+
+### 4. Testing Stores
+
+Create testable stores:
+
+```typescript
+// tests/stores/user.test.ts
+import { setActivePinia, createPinia } from 'pinia'
+import { useUserStore } from '~/stores/user'
+import { describe, beforeEach, it, expect, vi } from 'vitest'
+
+describe('User Store', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+  
+  it('has correct initial state', () => {
+    const store = useUserStore()
+    expect(store.currentUser).toBe(null)
+    expect(store.isLoading).toBe(false)
+    expect(store.error).toBe(null)
+  })
+  
+  it('updates user when fetchUser succeeds', async () => {
+    const store = useUserStore()
+    
+    // Mock fetch
+    global.$fetch = vi.fn().mockResolvedValue({
+      id: '123',
+      name: 'Test User',
+      email: 'test@example.com'
+    })
+    
+    await store.fetchUser()
+    
+    expect(store.isLoading).toBe(false)
+    expect(store.currentUser).toEqual({
+      id: '123',
+      name: 'Test User',
+      email: 'test@example.com'
+    })
+    expect(store.error).toBe(null)
+  })
+})
+```
+
+## Common Anti-patterns to Avoid
+
+1. **Overusing Global State**: Not everything belongs in a store. Use stores for truly shared state.
+
+2. **Direct State Mutation**: Always use actions to modify state for better predictability and debugging.
+
+3. **Storing Derived Data**: Use getters instead of storing computed values in state.
+
+4. **Lack of Typing**: Always use TypeScript interfaces to define store state shape.
+
+5. **Circular Store Dependencies**: Avoid circular dependencies between stores.
+
+This guide should help you implement robust and maintainable state management with Pinia in your Nuxt application.

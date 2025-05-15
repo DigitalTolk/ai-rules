@@ -4,6 +4,10 @@ globs:
 alwaysApply: false
 ---
 # useQuery Composable
+---
+description: This rule should be use whenever we want to make any API call to any server
+glob: "**/composables/**/use*Query.{js,ts}"
+---
 
 ## Overview
 
