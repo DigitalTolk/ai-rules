@@ -3,38 +3,262 @@ description: Tabbed interface component for organizing related content
 globs: components/base/BaseTabs.vue
 alwaysApply: false
 ---
-
 # BaseTabs Component
 
 ## Description
-Tabbed interface component for organizing related content
+A tabbed interface component for organizing related content into selectable panes. BaseTabs is a wrapper around the n-tabs component, providing a flexible navigation system with multiple visual styles and configurations.
+
+## Related Components
+- BaseTab - Individual tab component used within BaseTabs
+- BaseTabPane - Content container for each tab panel
 
 ## Props
 
-### Core Props
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| prop1 | string | - | Description of prop1 |
-| prop2 | boolean | false | Description of prop2 |
+| addable | Boolean | false | Whether to show an add button for creating new tabs |
+| animated | Boolean | false | Whether to animate tab transitions |
+| barWidth | Number | undefined | Width of the active tab indicator bar |
+| closable | Boolean | false | Whether tabs can be closed |
+| defaultValue | String/Number | undefined | Initial active tab (uncontrolled mode) |
+| displayDirective | String | "if" | Directive used for pane content rendering |
+| justifyContent | String | undefined | Tab alignment ("space-between", "space-around", etc.) |
+| size | String | "medium" | Size of the tabs ("small", "medium", "large") |
+| paneClass | String | undefined | Class applied to tab panes |
+| paneStyle | String/Object | undefined | Style applied to tab panes |
+| paneWrapperClass | String | undefined | Class applied to tab pane wrapper |
+| paneWrapperStyle | String/Object | undefined | Style applied to tab pane wrapper |
+| placement | String | "top" | Position of tabs ("top", "bottom", "left", "right") |
+| tabStyle | String/Object | undefined | Style applied to tabs |
+| tabsPadding | Number | 0 | Padding around tabs |
+| tabPane | Boolean | true | Whether to use BaseTabPane components |
+| trigger | String | "click" | Tab activation trigger ("click", "hover") |
+| type | String | "bar" | Tab style type ("bar", "line", "card", "segment") |
+| value | String/Number | undefined | Active tab value (v-model, legacy) |
+| modelValue | String/Number | undefined | Active tab value (v-model) |
+| themeOverrides | Object | {} | Custom theme overrides for the component |
+
+## Events
+
+| Event | Parameters | Description |
+|-------|------------|-------------|
+| add | () | Triggered when the add button is clicked |
+| close | (tabName) | Triggered when a tab is closed |
+| update:modelValue | (tabName) | Triggered when the active tab changes |
+| before:leave | (tabName, event) | Triggered before leaving a tab |
 
 ## Slots
 
 | Slot | Description |
 |------|-------------|
-| default | Default content of the component |
+| default | Tab panes or tabs content |
+| paneSlot | Alternative slot for tab panes |
+| prefix | Content displayed before the tabs |
+| suffix | Content displayed after the tabs |
 
-## Examples
+## Usage Examples
 
-### Basic Usage
+### Basic Usage with Tab Panes
 ```vue
 <template>
-  <BaseTabs></BaseTabs>
+  <BaseTabs v-model="activeTab">
+    <BaseTabPane name="profile" tab="Profile">
+      <div>Profile content goes here</div>
+    </BaseTabPane>
+    <BaseTabPane name="settings" tab="Settings">
+      <div>Settings content goes here</div>
+    </BaseTabPane>
+    <BaseTabPane name="notifications" tab="Notifications">
+      <div>Notifications content goes here</div>
+    </BaseTabPane>
+  </BaseTabs>
 </template>
 
 <script setup>
-import { BaseTabs } from '@digitaltolk/ui';
+import { ref } from 'vue';
+import { BaseTabs, BaseTabPane } from '@digitaltolk/ui';
+
+const activeTab = ref('profile');
 </script>
 ```
 
+### With Custom Tab Contents
+```vue
+<template>
+  <BaseTabs v-model="activeTab">
+    <BaseTabPane name="profile">
+      <template #tab>
+        <BaseIcon>account_circle</BaseIcon> Profile
+      </template>
+      <div>Profile content goes here</div>
+    </BaseTabPane>
+    <BaseTabPane name="settings">
+      <template #tab>
+        <BaseIcon>settings</BaseIcon> Settings
+      </template>
+      <div>Settings content goes here</div>
+    </BaseTabPane>
+  </BaseTabs>
+</template>
+```
+
+### Different Tab Styles
+```vue
+<template>
+  <BaseSpace vertical>
+    <BaseTabs type="bar" v-model="activeTab">
+      <!-- Tab panes -->
+    </BaseTabs>
+    
+    <BaseTabs type="line" v-model="activeTab">
+      <!-- Tab panes -->
+    </BaseTabs>
+    
+    <BaseTabs type="card" v-model="activeTab">
+      <!-- Tab panes -->
+    </BaseTabs>
+    
+    <BaseTabs type="segment" v-model="activeTab">
+      <!-- Tab panes -->
+    </BaseTabs>
+  </BaseSpace>
+</template>
+```
+
+### Closable Tabs
+```vue
+<template>
+  <BaseTabs v-model="activeTab" closable @close="handleCloseTab">
+    <BaseTabPane 
+      v-for="tab in tabs" 
+      :key="tab.name" 
+      :name="tab.name" 
+      :tab="tab.label"
+      closable
+    >
+      <div>{{ tab.content }}</div>
+    </BaseTabPane>
+  </BaseTabs>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { BaseTabs, BaseTabPane } from '@digitaltolk/ui';
+
+const activeTab = ref('tab1');
+const tabs = ref([
+  { name: 'tab1', label: 'Tab 1', content: 'Content for Tab 1' },
+  { name: 'tab2', label: 'Tab 2', content: 'Content for Tab 2' },
+  { name: 'tab3', label: 'Tab 3', content: 'Content for Tab 3' }
+]);
+
+const handleCloseTab = (tabName) => {
+  const index = tabs.value.findIndex(tab => tab.name === tabName);
+  if (index !== -1) {
+    tabs.value.splice(index, 1);
+    if (tabs.value.length > 0 && tabName === activeTab.value) {
+      activeTab.value = tabs.value[0].name;
+    }
+  }
+};
+</script>
+```
+
+### Tabs with Add Button
+```vue
+<template>
+  <BaseTabs 
+    v-model="activeTab" 
+    addable 
+    closable
+    @add="addNewTab"
+    @close="handleCloseTab"
+  >
+    <BaseTabPane 
+      v-for="tab in tabs" 
+      :key="tab.name" 
+      :name="tab.name" 
+      :tab="tab.label"
+      closable
+    >
+      <div>{{ tab.content }}</div>
+    </BaseTabPane>
+  </BaseTabs>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { BaseTabs, BaseTabPane } from '@digitaltolk/ui';
+
+const activeTab = ref('tab1');
+const tabs = ref([
+  { name: 'tab1', label: 'Tab 1', content: 'Content for Tab 1' }
+]);
+let tabCounter = 2;
+
+const addNewTab = () => {
+  const newTabName = `tab${tabCounter}`;
+  tabs.value.push({
+    name: newTabName,
+    label: `Tab ${tabCounter}`,
+    content: `Content for Tab ${tabCounter}`
+  });
+  tabCounter++;
+  activeTab.value = newTabName;
+};
+
+const handleCloseTab = (tabName) => {
+  const index = tabs.value.findIndex(tab => tab.name === tabName);
+  if (index !== -1) {
+    tabs.value.splice(index, 1);
+    if (tabs.value.length > 0 && tabName === activeTab.value) {
+      activeTab.value = tabs.value[0].name;
+    }
+  }
+};
+</script>
+```
+
+### Different Tab Placements
+```vue
+<template>
+  <BaseTabs placement="left" v-model="activeTab">
+    <!-- Tab panes -->
+  </BaseTabs>
+</template>
+```
+
+## Implementation Details
+
+The BaseTabs component wraps n-tabs while providing consistent styling in accordance with the DigitalTolk design system. It supports two methods of defining tabs:
+
+1. Using BaseTabPane components in the default slot (recommended)
+2. Using BaseTab components directly (when tabPane prop is set to false)
+
+The component handles complex slot arrangements and automatically processes the tabs structure to ensure correct rendering of content.
+
+## BaseTabPane Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| closable | Boolean | false | Whether this tab can be closed |
+| disabled | Boolean | false | Whether this tab is disabled |
+| displayDirective | String | "if" | Directive used for content rendering ("if", "show", "show:lazy") |
+| name | String/Number | undefined | Unique identifier for the tab |
+| tab | String/Object | undefined | Tab label content |
+| tabProps | Object | undefined | Props to pass to the tab |
+| themeOverrides | Object | {} | Custom theme overrides for the component |
+
+## BaseTab Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| closable | Boolean | false | Whether this tab can be closed |
+| disabled | Boolean | false | Whether this tab is disabled |
+| name | String/Number | undefined | Unique identifier for the tab |
+| themeOverrides | Object | {} | Custom theme overrides for the component |
+
 ## Related Components
-- List of related components
+- BaseCard - For alternative content organization
+- BaseCollapse - For accordion-style content organization 
+- BaseSpace - For spacing between elements

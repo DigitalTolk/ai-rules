@@ -1,10 +1,4 @@
 ---
-description: Button component for triggering actions
-globs: components/base/BaseButton.vue
-alwaysApply: false
----
-
----
 description: 
 globs: 
 alwaysApply: false
@@ -12,243 +6,128 @@ alwaysApply: false
 # BaseButton Component
 
 ## Description
-BaseButton is a fundamental UI component that provides a clickable button with various styles, sizes, and states. It supports different types of interactions and can be customized to match the application's design system.
+Button component for triggering actions. BaseButton is a versatile component that provides a clickable button with various styles, sizes, states, and icon support. It can be used as a standalone button or as part of a button group.
 
 ## Props
 
-### Core Props
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| type | 'primary' \| 'secondary' \| 'text' \| 'link' | 'primary' | The type of button style |
-| size | 'small' \| 'medium' \| 'large' | 'medium' | The size of the button |
-| shape | 'default' \| 'circle' \| 'round' | 'default' | The shape of the button |
-| disabled | boolean | false | Whether the button is disabled |
-| loading | boolean | false | Whether the button is in loading state |
-| danger | boolean | false | Whether the button is in danger state |
-| ghost | boolean | false | Whether the button is ghost style |
-| block | boolean | false | Whether the button should take full width |
-| icon | ReactNode | - | Icon to be displayed in the button |
+| attrType | String | "button" | HTML button type attribute ("button", "submit", "reset") |
+| block | Boolean | false | When true, button takes full width of its container |
+| bordered | Boolean | true | Whether to show the button border |
+| circle | Boolean | false | Whether the button should be circular |
+| icon | String | undefined | Material icon name to display inside the button |
+| dashed | Boolean | false | Whether the border is dashed |
+| disabled | Boolean | false | Whether the button is disabled |
+| focusable | Boolean | true | Whether the button can receive focus |
+| ghost | Boolean | false | Whether to use ghost style (transparent background with border) |
+| group | Boolean | false | Whether the button is part of a button group |
+| keyboard | Boolean | true | Whether the button responds to keyboard events |
+| label | String | undefined | Text label for the button |
+| loading | Boolean | false | Whether to show a loading indicator |
+| round | Boolean | false | Whether the button has rounded corners |
+| size | String | "medium" | Size of the button ("tiny", "small", "medium", "large") |
+| text | Boolean | false | Whether to use text button style (no background or border) |
+| textColor | String | undefined | Custom text color |
+| type | String | "primary" | Type of button ("default", "tertiary", "primary", "success", "info", "warning", "error", "secondary") |
+| tag | String | "button" | HTML tag to use for the button |
+| vertical | Boolean | false | Whether to arrange buttons vertically when in a group |
+| themeOverrides | Object | {} | Custom theme overrides for component styling |
 
-### Event Props
-| Prop | Type | Description |
-|------|------|-------------|
-| onClick | (event: MouseEvent) => void | Click event handler |
-| onMouseEnter | (event: MouseEvent) => void | Mouse enter event handler |
-| onMouseLeave | (event: MouseEvent) => void | Mouse leave event handler |
-| onFocus | (event: FocusEvent) => void | Focus event handler |
-| onBlur | (event: FocusEvent) => void | Blur event handler |
+## Slots
 
-### Accessibility Props
-| Prop | Type | Description |
-|------|------|-------------|
-| aria-label | string | Accessibility label for screen readers |
-| role | string | ARIA role for the button |
-| tabIndex | number | Tab index for keyboard navigation |
+| Slot | Description |
+|------|-------------|
+| default | Content of the button, will display label prop if no content is provided |
+| prefix | Content to prepend, replaces icon prop if provided |
+| suffix | Content to append |
+| icon | Custom icon content (only used when prefix slot isn't provided) |
 
-## Examples
+## Usage Examples
 
 ### Basic Usage
-```jsx
-import { BaseButton } from '@digitaltolk/ui';
-
-const BasicButton = () => (
-  <BaseButton onClick={() => console.log('clicked')}>
-    Click Me
-  </BaseButton>
-);
+```vue
+<template>
+  <BaseButton>Click Me</BaseButton>
+</template>
 ```
 
-### Different Types
-```jsx
-const ButtonTypes = () => (
+### Button Types
+```vue
+<template>
   <div>
     <BaseButton type="primary">Primary</BaseButton>
     <BaseButton type="secondary">Secondary</BaseButton>
-    <BaseButton type="text">Text</BaseButton>
-    <BaseButton type="link">Link</BaseButton>
+    <BaseButton type="default">Default</BaseButton>
+    <BaseButton type="success">Success</BaseButton>
+    <BaseButton type="warning">Warning</BaseButton>
+    <BaseButton type="error">Error</BaseButton>
   </div>
-);
+</template>
+```
+
+### Button Sizes
+```vue
+<template>
+  <div>
+    <BaseButton size="tiny">Tiny</BaseButton>
+    <BaseButton size="small">Small</BaseButton>
+    <BaseButton size="medium">Medium</BaseButton>
+    <BaseButton size="large">Large</BaseButton>
+  </div>
+</template>
 ```
 
 ### With Icon
-```jsx
-import { BaseIcon } from '@digitaltolk/ui';
+```vue
+<template>
+  <BaseButton icon="search">Search</BaseButton>
+</template>
+```
 
-const IconButton = () => (
-  <BaseButton icon={<BaseIcon type="search" />}>
+### With Prefix and Suffix
+```vue
+<template>
+  <BaseButton>
+    <template #prefix>
+      <BaseIcon>search</BaseIcon>
+    </template>
     Search
+    <template #suffix>
+      <BaseIcon>arrow_forward</BaseIcon>
+    </template>
   </BaseButton>
-);
+</template>
 ```
 
-### Loading State
-```jsx
-const LoadingButton = () => {
-  const [loading, setLoading] = useState(false);
-
-  const handleClick = async () => {
-    setLoading(true);
-    await someAsyncOperation();
-    setLoading(false);
-  };
-
-  return (
-    <BaseButton loading={loading} onClick={handleClick}>
-      Submit
-    </BaseButton>
-  );
-};
+### Ghost and Text Buttons
+```vue
+<template>
+  <div>
+    <BaseButton ghost>Ghost Button</BaseButton>
+    <BaseButton text>Text Button</BaseButton>
+  </div>
+</template>
 ```
 
-### Disabled State
-```jsx
-const DisabledButton = () => (
-  <BaseButton disabled onClick={() => console.log('clicked')}>
-    Cannot Click
+### Circle Button
+```vue
+<template>
+  <BaseButton circle icon="add" />
+</template>
+```
+
+### Button Group
+```vue
+<template>
+  <BaseButton group>
+    <BaseButton>Left</BaseButton>
+    <BaseButton>Middle</BaseButton>
+    <BaseButton>Right</BaseButton>
   </BaseButton>
-);
+</template>
 ```
 
-### Danger Button
-```jsx
-const DangerButton = () => (
-  <BaseButton danger onClick={handleDelete}>
-    Delete
-  </BaseButton>
-);
-```
-
-### Block Button
-```jsx
-const BlockButton = () => (
-  <BaseButton block onClick={handleSubmit}>
-    Submit Form
-  </BaseButton>
-);
-```
-
-### With Custom Styling
-```jsx
-const CustomButton = () => (
-  <BaseButton
-    style={{
-      backgroundColor: '#ff4d4f',
-      borderColor: '#ff4d4f',
-      color: '#fff',
-    }}
-    onClick={handleCustomAction}
-  >
-    Custom Style
-  </BaseButton>
-);
-```
-
-## Best Practices
-
-1. **Button Text**
-   - Use clear, action-oriented text
-   - Keep text concise
-   - Use sentence case for button text
-
-2. **Button States**
-   - Always handle loading states for async operations
-   - Provide visual feedback for disabled states
-   - Use danger state for destructive actions
-
-3. **Accessibility**
-   - Always provide aria-label for icon-only buttons
-   - Ensure sufficient color contrast
-   - Support keyboard navigation
-
-4. **Performance**
-   - Debounce click handlers for frequent actions
-   - Use proper event handling
-   - Implement proper cleanup
-
-## Common Patterns
-
-### Form Submission
-```jsx
-const SubmitButton = () => {
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      await submitForm();
-      BaseToaster.success('Form submitted successfully');
-    } catch (error) {
-      BaseToaster.error('Failed to submit form');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <BaseButton
-      type="primary"
-      loading={loading}
-      onClick={handleSubmit}
-    >
-      Submit
-    </BaseButton>
-  );
-};
-```
-
-### Confirmation Dialog
-```jsx
-const DeleteButton = () => {
-  const handleDelete = () => {
-    BaseModal.confirm({
-      title: 'Are you sure?',
-      content: 'This action cannot be undone.',
-      onOk: () => {
-        // Perform delete operation
-      },
-    });
-  };
-
-  return (
-    <BaseButton
-      danger
-      onClick={handleDelete}
-    >
-      Delete
-    </BaseButton>
-  );
-};
-```
-
-### Icon with Text
-```jsx
-const IconTextButton = () => (
-  <BaseButton
-    icon={<BaseIcon type="download" />}
-    onClick={handleDownload}
-  >
-    Download
-  </BaseButton>
-);
-```
-
-## Testing Checklist
-
-- [ ] Button renders correctly with all props
-- [ ] Click handler works as expected
-- [ ] Loading state works correctly
-- [ ] Disabled state works correctly
-- [ ] Different types render correctly
-- [ ] Icon renders correctly
-- [ ] Accessibility features work
-- [ ] Keyboard navigation works
-- [ ] Custom styles are applied correctly
-- [ ] Event handlers work as expected
-
-## Notes
-- Always provide meaningful text for buttons
-- Use appropriate button types for different actions
-- Handle loading states for async operations
-- Ensure proper accessibility
-- Test all button states and interactions
-- Follow the design system guidelines
+## Related Components
+- BaseIcon - Used inside buttons for icons
+- BaseWrapper - Provides base functionality for UI components

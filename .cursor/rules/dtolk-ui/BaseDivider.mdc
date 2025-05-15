@@ -3,9 +3,107 @@ description: Component for visual separation with optional text
 globs: components/base/BaseDivider.vue
 alwaysApply: false
 ---
+# BaseDivider Component
 
----
-description:
-globs:
-alwaysApply: false
----
+## Description
+Component for visual separation with optional text. BaseDivider provides horizontal or vertical dividing lines that can optionally include a title or content in the center, left, or right.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| dashed | Boolean | false | Whether the divider line should be dashed |
+| titlePlacement | String | "center" | Placement of title text ("left", "center", "right") |
+| height | String | "1em" | Height of vertical divider |
+| vertical | Boolean | false | Whether the divider is vertical |
+| xMargin | String | "24px" | Horizontal margin on both sides |
+| themeOverrides | Object | {} | Custom theme overrides for styling |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Content to display in the divider (optional) |
+
+## Usage Examples
+
+### Basic Horizontal Divider
+```vue
+<template>
+  <BaseDivider />
+</template>
+```
+
+### Divider with Text
+```vue
+<template>
+  <BaseDivider>OR</BaseDivider>
+</template>
+```
+
+### Divider with Title Placement
+```vue
+<template>
+  <div>
+    <BaseDivider title-placement="left">Left Title</BaseDivider>
+    <BaseDivider title-placement="center">Center Title</BaseDivider>
+    <BaseDivider title-placement="right">Right Title</BaseDivider>
+  </div>
+</template>
+```
+
+### Dashed Divider
+```vue
+<template>
+  <BaseDivider dashed>Dashed Divider</BaseDivider>
+</template>
+```
+
+### Vertical Divider
+```vue
+<template>
+  <div style="height: 50px; display: flex; align-items: center;">
+    <span>Text</span>
+    <BaseDivider vertical height="30px" />
+    <span>More Text</span>
+  </div>
+</template>
+```
+
+### Customized Margins
+```vue
+<template>
+  <BaseDivider x-margin="48px">With Custom Margins</BaseDivider>
+</template>
+```
+
+### With Custom Styling
+```vue
+<template>
+  <BaseDivider
+    :theme-overrides="{
+      titleTextColor: '#1976d2',
+      textColor: '#1976d2',
+      fontSize: '16px',
+      fontWeight: 'bold'
+    }"
+  >
+    Custom Styled Divider
+  </BaseDivider>
+</template>
+```
+
+## Component Behavior Notes
+- The divider automatically hides title styling when no default slot content is provided
+- When vertical, the divider takes the height specified in the height prop
+- When horizontal, the divider uses the xMargin prop to control spacing
+- The component dynamically adapts based on whether content is provided in the default slot
+
+## Styling
+- The component includes a special class `n-divider--no-title` to handle the case when no title is provided
+- You can customize color, thickness and style using themeOverrides
+- Default horizontal margins are 24px on both sides
+- Default vertical divider height is 1em
+
+## Related Components
+- BaseWrapper - Provides base functionality for UI components

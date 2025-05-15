@@ -3,38 +3,179 @@ description: Container component with validation handling for form elements
 globs: components/base/BaseForm.vue
 alwaysApply: false
 ---
-
 # BaseForm Component
 
 ## Description
-Container component with validation handling for form elements
+The BaseForm component is a wrapper around the naive-ui form component, providing a container with validation handling for form elements. It supports form validation, custom styling, and various layout options.
 
 ## Props
 
-### Core Props
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| prop1 | string | - | Description of prop1 |
-| prop2 | boolean | false | Description of prop2 |
+| disabled | Boolean | false | Disables all form elements within the form |
+| inline | Boolean | false | Displays the form as an inline form |
+| labelWidth | Number, String | undefined | The width of label. Useful when label-placement is 'left' |
+| labelAlign | String | undefined | Text alignment within the label. Options: 'left', 'right' |
+| labelPlacement | String | 'top' | The placement of the label. Options: 'left', 'top' |
+| model | Object | {} | Data object containing the form values |
+| rules | Object | {} | Validation rules for the form fields |
+| showFeedback | Boolean | true | Whether to display the feedback area |
+| showLabel | Boolean | true | Whether to display the label |
+| showRequireMark | Boolean | undefined | Whether to show the required mark for fields |
+| requireMarkPlacement | String | 'right' | Placement of the required mark. Options: 'left', 'right', 'right-hanging' |
+| size | String | 'medium' | Size of the form elements. Options: 'small', 'medium', 'large' |
+| validateMessages | Object | undefined | Custom validation messages |
+| themeOverrides | Object | {} | Custom theme overrides for the form component |
+
+## Methods
+
+| Method | Parameters | Return | Description |
+|--------|------------|--------|-------------|
+| validate | (callback, rule) | Promise | Validates the form and calls the callback with errors (if any) |
+| restoreValidation | - | - | Restores the validation state (clears validation) |
 
 ## Slots
 
 | Slot | Description |
 |------|-------------|
-| default | Default content of the component |
+| default | Form content, typically containing BaseFormItem components |
 
-## Examples
+## Usage Examples
 
-### Basic Usage
+### Basic Form
+
 ```vue
 <template>
-  <BaseForm></BaseForm>
+  <BaseForm :model="formData" :rules="rules">
+    <BaseFormItem label="Name" path="name">
+      <BaseTextField v-model="formData.name" />
+    </BaseFormItem>
+    
+    <BaseFormItem label="Email" path="email">
+      <BaseTextField v-model="formData.email" />
+    </BaseFormItem>
+    
+    <BaseFormItem>
+      <BaseButton @click="submitForm">Submit</BaseButton>
+    </BaseFormItem>
+  </BaseForm>
 </template>
 
 <script setup>
-import { BaseForm } from '@digitaltolk/ui';
+import { ref } from 'vue';
+import { BaseForm, BaseFormItem, BaseTextField, BaseButton } from '@digitaltolk/ui';
+
+const formData = ref({
+  name: '',
+  email: ''
+});
+
+const rules = {
+  name: {
+    required: true,
+    message: 'Please enter your name',
+    trigger: 'blur'
+  },
+  email: {
+    required: true,
+    message: 'Please enter your email',
+    trigger: 'blur'
+  }
+};
+
+const submitForm = () => {
+  // Form submission logic
+};
 </script>
 ```
 
+### Form Validation
+
+```vue
+<template>
+  <BaseForm ref="formRef" :model="formData" :rules="rules">
+    <BaseFormItem label="Age" path="age">
+      <BaseTextField v-model="formData.age" />
+    </BaseFormItem>
+    
+    <BaseFormItem>
+      <BaseButton @click="validateForm">Validate</BaseButton>
+      <BaseButton @click="resetValidation">Reset</BaseButton>
+    </BaseFormItem>
+  </BaseForm>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { BaseForm, BaseFormItem, BaseTextField, BaseButton } from '@digitaltolk/ui';
+
+const formRef = ref(null);
+const formData = ref({
+  age: null
+});
+
+const rules = {
+  age: [
+    {
+      required: true,
+      validator(rule, value) {
+        if (!value) {
+          return new Error('Age is required');
+        } else if (!/^\d*$/.test(value)) {
+          return new Error('Age should be an integer');
+        } else if (Number(value) < 18) {
+          return new Error('Age should be above 18');
+        }
+        return true;
+      },
+      trigger: ['input', 'blur']
+    }
+  ]
+};
+
+const validateForm = () => {
+  formRef.value.validate((errors) => {
+    if (!errors) {
+      console.log('Validation successful');
+    } else {
+      console.log('Validation failed', errors);
+    }
+  });
+};
+
+const resetValidation = () => {
+  formRef.value.restoreValidation();
+};
+</script>
+```
+
+### Custom Form Layout
+
+```vue
+<template>
+  <BaseForm 
+    :model="formData" 
+    :rules="rules"
+    labelPlacement="left"
+    labelWidth="100px"
+    labelAlign="right"
+    size="small"
+  >
+    <!-- Form content -->
+  </BaseForm>
+</template>
+```
+
+## CSS Customization
+
+The BaseForm component applies specific styling to form elements, including:
+- Proper spacing between form items
+- Error message styling with specific font size and weight
+- Custom label styling with support for icons
+
 ## Related Components
-- List of related components
+- BaseFormItem - Individual form field container
+- BaseTextField - Text input component
+- BaseSelect - Dropdown selection component
+- BaseCheckbox - Checkbox component
+- BaseRadio - Radio button component
