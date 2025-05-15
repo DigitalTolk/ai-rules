@@ -1,12 +1,19 @@
+# Include the frontend pipeline
+include:
+  - project: dtolk/dope/pipelines
+    ref: main
+    file: frontend.yml
+
 # Minimal GitLab CI/CD Configuration
 stages:
-  - publish
+  - pre-checks
+  - deploy
 
-# Publish stage
-publish:
-  stage: publish
+# Deploy stage
+deploy:
+  stage: deploy
   script:
-    - echo "Publish stage would run here"
+    - echo "Deploy stage would run here"
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
