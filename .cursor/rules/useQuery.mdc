@@ -1,0 +1,368 @@
+---
+description: This rule should be use whenever we want to make any API call to any server
+globs: 
+alwaysApply: false
+---
+# useQuery Composable
+
+## Overview
+
+The `useQuery` composable is a wrapper around `useFetch` from VueUse that provides enhanced functionality for making REST API calls. It handles request formatting, response parsing, and provides reactive data, error handling, and pagination support.
+
+## Basic Usage
+
+Import and use the composable in your component or other composables:
+
+```js
+import useQuery from '~/composables/useQuery';
+
+// Basic GET request
+const { data, error, execute } = useQuery('/api/users');
+
+// POST request with body
+const createUser = () => {
+  const { data, error, execute } = useQuery('/api/users', {
+    method: 'POST',
+    body: {
+      name: 'John Doe',
+      email: 'john@example.com'
+    },
+    notification: useNotification()
+  });
+  
+  return { data, error, execute };
+};
+```
+
+## Configuration Options
+
+The `useQuery` composable accepts an endpoint and a configuration object with the following options:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `method` | string | `'GET'` | HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD) |
+| `params` | object | - | URL query parameters |
+| `body` | object | - | Request body (for POST, PUT, PATCH, DELETE) |
+| `headers` | object | - | Custom HTTP headers |
+| `baseURL` | string | - | Base URL to prepend to the endpoint |
+| `onSuccess` | function | - | Callback function called on successful response |
+| `onError` | function | - | Callback function called on error |
+| `onSettled` | function | - | Callback function called when request is completed (success or error) |
+| `notification` | object | - | Notification service for showing success/error messages |
+| `resourceName` | string | `'Item'` | Name of the resource for success notifications |
+| `property` | string | - | Property in the response data to return |
+
+## Return Values
+
+The composable returns the following:
+
+| Property | Description |
+|----------|-------------|
+| `data` | Reactive reference to the response data |
+| `pagination` | Reactive reference to pagination information |
+| `error` | Reactive reference to any error that occurred |
+| `execute` | Function to manually execute the request |
+| `onFetchResponse` | Function to add a callback for successful responses |
+| `onFetchError` | Function to add a callback for errors |
+| `onFetchFinally` | Function to add a callback when the request completes |
+
+## Examples
+
+### GET Request with Query Parameters
+
+```js
+const { data: users } = useQuery('/api/users', {
+  params: {
+    page: 1,
+    limit: 10,
+    search: 'john'
+  }
+});
+```
+
+### POST Request with Form Data
+
+```js
+const { execute: createUser, error } = useQuery('/api/users', {
+  method: 'POST',
+  body: {
+    name: 'John Doe',
+    email: 'john@example.com',
+    role: 'admin'
+  },
+  headers: {
+    'Content-Type': 'application/json'  // Override default Content-Type
+  },
+  notification: useNotification(),
+  resourceName: 'User'  // Will show "User Created" on success
+});
+
+// Execute the request when needed
+const handleSubmit = async () => {
+  await createUser();
+  if (!error.value) {
+    // Handle success
+  }
+};
+```
+
+### PUT Request with Error Handling
+
+```js
+const { execute: updateUser, error, onFetchResponse } = useQuery(`/api/users/${userId}`, {
+  method: 'PUT',
+  body: {
+    name: 'John Updated',
+    email: 'john.updated@example.com'
+  },
+  onError: (err) => {
+    console.error('Failed to update user:', err);
+    // Custom error handling
+  },
+  notification: useNotification(),
+  resourceName: 'User profile'
+});
+
+// Add custom success handler
+onFetchResponse((response) => {
+  if (response.status === 200) {
+    // Do something after successful update
+    router.push('/users');
+  }
+});
+```
+
+### DELETE Request
+
+```js
+const { execute: deleteUser } = useQuery(`/api/users/${userId}`, {
+  method: 'DELETE',
+  notification: useNotification(),
+  resourceName: 'User'  // Will show "User Removed" on success
+});
+```
+
+### Working with Pagination
+
+```js
+const { data: users, pagination } = useQuery('/api/users', {
+  params: {
+    page: currentPage.value,
+    limit: 10
+  },
+  property: 'users'  // Extract 'users' property from response
+});
+
+// Pagination information
+watch(pagination, (newPagination) => {
+  console.log('Current page:', newPagination.page);
+  console.log('Total pages:', newPagination.pageCount);
+  console.log('Total items:', newPagination.total);
+});
+```
+
+### Re-executing Requests
+
+```js
+const { data: users, execute: fetchUsers } = useQuery('/api/users');
+
+// Re-fetch users
+const refreshUsers = async () => {
+  await fetchUsers();
+  console.log('Users refreshed');
+};
+
+// Call when needed
+const handleRefreshClick = () => {
+  refreshUsers();
+};
+```
+
+## Common Patterns
+
+### Creating a Resource-Specific Query Hook
+
+```js
+// composables/useUsersQuery.js
+export function useUsersQuery() {
+  const notification = useNotification();
+
+  // Get all users
+  const getUsers = (params = {}) => {
+    return useQuery('/api/users', {
+      params,
+      notification
+    });
+  };
+
+  // Get a specific user
+  const getUser = (id) => {
+    return useQuery(`/api/users/${id}`, {
+      notification
+    });
+  };
+
+  // Create a user
+  const createUser = (userData) => {
+    return useQuery('/api/users', {
+      method: 'POST',
+      body: userData,
+      notification,
+      resourceName: 'User'
+    });
+  };
+
+  // Update a user
+  const updateUser = (id, userData) => {
+    return useQuery(`/api/users/${id}`, {
+      method: 'PUT',
+      body: userData,
+      notification,
+      resourceName: 'User'
+    });
+  };
+
+  // Delete a user
+  const deleteUser = (id) => {
+    return useQuery(`/api/users/${id}`, {
+      method: 'DELETE',
+      notification,
+      resourceName: 'User'
+    });
+  };
+
+  return {
+    getUsers,
+    getUser,
+    createUser,
+    updateUser,
+    deleteUser
+  };
+}
+
+// Usage in a component
+const { getUsers, createUser } = useUsersQuery();
+const { data: users } = getUsers({ page: 1 });
+const { execute: submitNewUser } = createUser({ name: 'John', email: 'john@example.com' });
+```
+
+### Handling Form Submissions
+
+```js
+// In a Vue component
+const form = reactive({
+  name: '',
+  email: '',
+  role: 'user'
+});
+
+const { execute: submitForm, error, onFetchResponse } = useQuery('/api/users', {
+  method: 'POST',
+  body: form,
+  notification: useNotification(),
+  resourceName: 'User'
+});
+
+// Form submission handler
+const handleSubmit = async () => {
+  isSubmitting.value = true;
+  
+  try {
+    await submitForm();
+    if (!error.value) {
+      // Reset form
+      form.name = '';
+      form.email = '';
+      form.role = 'user';
+    }
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+// Optional: Add custom success handler
+onFetchResponse(() => {
+  // Navigate away or do something else on success
+  router.push('/users');
+});
+```
+
+### Using with Async/Await
+
+```js
+const fetchData = async () => {
+  isLoading.value = true;
+  
+  try {
+    const { execute } = useQuery('/api/data', {
+      params: {
+        id: currentId.value
+      }
+    });
+    
+    const result = await execute();
+    processData(result);
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+```
+
+## Best Practices
+
+1. **Error Handling**
+   - Always handle potential errors, either with `onError` callback or by watching the `error` ref
+   - Use custom error handling for critical operations
+   - Consider global error handlers for common error patterns
+
+2. **Request Organization**
+   - Group related API calls into dedicated composables (e.g., `useUsersQuery`, `useProductsQuery`)
+   - Use consistent naming patterns for your query functions
+   - Keep request logic separate from UI components
+
+3. **Performance**
+   - Be mindful of when requests are executed
+   - Use caching when appropriate
+   - Consider debouncing or throttling for frequent updates
+
+4. **Security**
+   - Never include sensitive information directly in URLs
+   - Be cautious when logging request/response data
+   - Validate and sanitize all user inputs before sending to the API
+
+5. **Content Type**
+   - By default, `useQuery` uses `application/x-www-form-urlencoded` as the Content-Type
+   - If you need to send JSON data, override the Content-Type header:
+     ```js
+     useQuery('/api/endpoint', {
+       method: 'POST',
+       body: data,
+       headers: {
+         'Content-Type': 'application/json'
+       }
+     });
+     ```
+
+## Troubleshooting
+
+1. **Request Not Executing**
+   - Check if you need to manually call `execute()` for your request
+   - Verify the URL is constructed correctly
+   - Check for any network issues or CORS restrictions
+
+2. **Data Not Available**
+   - Remember that `data` is a ref and needs `.value` in setup functions
+   - Check if you need to use the `property` option to extract data from a nested response
+   - Ensure the request completed successfully by checking `error.value`
+
+3. **Unexpected Response Format**
+   - Check the API documentation for the expected response structure
+   - Use the `property` option to extract the relevant data
+   - Consider transforming the response in an `onFetchResponse` callback
+
+4. **HTTP Method Issues**
+   - Ensure you're using the correct HTTP method for the endpoint
+   - For PUT/POST/PATCH, verify the `body` is correctly formatted
+   - Check that all required headers are set properly
