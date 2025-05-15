@@ -15,7 +15,6 @@ This guide outlines the recommended architecture, directory structure, and namin
 
 ```
 .
-├── app/                 # (Optional) App directory if using new Nuxt 4-style structure
 ├── assets/              # Static assets to be processed
 ├── components/          # Vue components
 │   ├── ui/              # Design system components
