@@ -1,5 +1,474 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+# Capacitor
+---
+description: Guidelines for developing cross-platform mobile apps with Capacitor in Nuxt applications
+glob: "**/capacitor.config.{ts,json}|**/*.capacitor.{ts,js}"
+---
+
+## Overview
+
+Capacitor is a cross-platform native runtime that makes it easy to build web apps that run natively on iOS, Android, and the web. This guide outlines our conventions for integrating and working with Capacitor in Nuxt applications.
+
+## Integration with Nuxt
+
+### Adding Capacitor to a Nuxt Project
+
+1. Install core Capacitor dependencies:
+
+```bash
+# Core Capacitor dependencies
+npm install @capacitor/core @capacitor/cli
+
+# Platform-specific dependencies
+npm install @capacitor/ios @capacitor/android
+
+# Essential plugins we use in our projects
+npm install @capacitor/app @capacitor/splash-screen @capacitor/status-bar
+npm install @capacitor/device @capacitor/network @capacitor/preferences
+npm install @capacitor/haptics @capacitor/keyboard @capacitor/dialog
+```
+
+2. Initialize Capacitor in your project:
+
+```bash
+# Initialize Capacitor with app details
+npx cap init [appName] [appId]
+
+# Example:
+npx cap init "My Nuxt App" com.example.myapp
+```
+
+3. Configure Nuxt for Capacitor by updating `nuxt.config.ts`:
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  // ...other config
+  
+  // Ensure your app builds to the correct directory
+  // This should match the 'webDir' in capacitor.config.ts
+  nitro: {
+    output: {
+      dir: './.output',
+      publicDir: './.output/public'
+    }
+  },
+  
+  // Add Capacitor-specific meta tags
+  app: {
+    head: {
+      meta: [
+        { name: 'format-detection', content: 'telephone=no' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' }
+      ],
+      // Add Capacitor.js script
+      script: [
+        { 
+          src: process.env.NODE_ENV === 'production' 
+            ? '/capacitor.js' 
+            : 'http://localhost:3000/capacitor.js',
+          defer: true
+        }
+      ]
+    }
+  }
+})
+```
+
+### Project Structure
+
+Ensure your project follows this structure:
+
+```
+project/
+├── capacitor.config.ts      # Capacitor configuration
+├── android/                 # Android platform code (after adding the platform)
+├── ios/                     # iOS platform code (after adding the platform)
+├── .output/                 # Nuxt build output 
+├── .output/public/          # Web assets (this directory is synced to native projects)
+├── components/              # Nuxt components
+├── pages/                   # Nuxt pages
+└── ... (rest of your Nuxt project)
+```
+
+### Capacitor Configuration
+
+Our standard `capacitor.config.ts` file for Nuxt projects:
+
+```ts
+import { CapacitorConfig } from '@capacitor/cli';
+import { loadEnv } from 'vite';
+
+// Load environment variables
+const env = loadEnv(process.env.NODE_ENV, process.cwd());
+
+const config: CapacitorConfig = {
+  appId: 'com.example.myapp',
+  appName: 'My Nuxt App',
+  webDir: '.output/public',
+  bundledWebRuntime: false,
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 2000,
+      backgroundColor: "#FFFFFF",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: true
+    },
+    StatusBar: {
+      style: "LIGHT",
+      backgroundColor: "#FFFFFF"
+    },
+    Keyboard: {
+      resize: "body",
+      style: "DARK",
+      resizeOnFullScreen: true
+    }
+  },
+  server: {
+    // Development server configuration (for live reload)
+    // url: 'http://192.168.1.2:3000', // Uncomment and set your IP for live reload
+    cleartext: true
+  }
+};
+
+export default config;
+```
+
+## Platform Management
+
+### Adding Platforms
+
+After initializing Capacitor, add the platforms you want to target:
+
+```bash
+npx cap add ios
+npx cap add android
+```
+
+### Build and Sync Workflow
+
+```bash
+# Build the Nuxt app
+npm run build
+
+# Sync with Capacitor
+npx cap sync
+```
+
+### Opening Native Projects
+
+```bash
+# Open iOS project in Xcode
+npx cap open ios
+
+# Open Android project in Android Studio
+npx cap open android
+```
+
+## Development Workflow
+
+### Live Reload Development
+
+Enable live reload for a smoother development experience:
+
+1. Set up the server config in `capacitor.config.ts`:
+   ```ts
+   server: {
+     url: 'http://your-local-ip:3000', // Replace with your actual local IP
+     cleartext: true
+   }
+   ```
+
+2. Start your Nuxt development server:
+   ```bash
+   npm run dev
+   ```
+
+3. Sync and run on a device or emulator:
+   ```bash
+   npx cap sync
+   npx cap run ios  # or 'android'
+   ```
+
+### Nuxt Composables for Capacitor
+
+Create dedicated composables for Capacitor features:
+
+```ts
+// composables/useCapacitor.ts
+import { App } from '@capacitor/app';
+import { Device } from '@capacitor/device';
+import { ref, onMounted } from 'vue';
+
+export function useApp() {
+  const isAppActive = ref(true);
+  
+  onMounted(() => {
+    App.addListener('appStateChange', ({ isActive }) => {
+      isAppActive.value = isActive;
+    });
+  });
+  
+  return {
+    isAppActive,
+    exitApp: () => App.exitApp()
+  };
+}
+
+export function useDevice() {
+  const deviceInfo = ref(null);
+  const batteryLevel = ref(100);
+  
+  async function getDeviceInfo() {
+    deviceInfo.value = await Device.getInfo();
+    return deviceInfo.value;
+  }
+  
+  async function getBatteryInfo() {
+    const batteryInfo = await Device.getBatteryInfo();
+    batteryLevel.value = batteryInfo.batteryLevel * 100;
+    return batteryInfo;
+  }
+  
+  return {
+    deviceInfo,
+    batteryLevel,
+    getDeviceInfo,
+    getBatteryInfo
+  };
+}
+```
+
+## Common Patterns
+
+### Platform Detection
+
+Use platform detection to deliver platform-specific features:
+
+```ts
+// composables/usePlatform.ts
+import { Capacitor } from '@capacitor/core';
+import { ref, computed, onMounted } from 'vue';
+
+export function usePlatform() {
+  const platform = ref('web');
+  
+  const isIOS = computed(() => platform.value === 'ios');
+  const isAndroid = computed(() => platform.value === 'android');
+  const isNative = computed(() => isIOS.value || isAndroid.value);
+  const isWeb = computed(() => platform.value === 'web');
+  
+  onMounted(() => {
+    platform.value = Capacitor.getPlatform();
+  });
+  
+  return {
+    platform,
+    isIOS,
+    isAndroid,
+    isNative,
+    isWeb
+  };
+}
+```
+
+### App Lifecycle Handling
+
+Handle application lifecycle events:
+
+```ts
+import { App } from '@capacitor/app';
+
+// In a component or composable
+onMounted(() => {
+  // Listen for app state changes
+  App.addListener('appStateChange', ({ isActive }) => {
+    console.log('App state changed. Is active?', isActive);
+    if (isActive) {
+      // App came to foreground
+      refreshData();
+    } else {
+      // App went to background
+      saveState();
+    }
+  });
+  
+  // Handle back button (Android)
+  App.addListener('backButton', () => {
+    if (canGoBack.value) {
+      router.back();
+    } else {
+      // Ask to exit app
+      showExitConfirmation();
+    }
+  });
+});
+```
+
+### Deep Links
+
+Configure and handle deep links:
+
+```ts
+// In capacitor.config.ts
+const config: CapacitorConfig = {
+  // ...
+  plugins: {
+    // ...
+  },
+  appUrlOpen: {
+    handlers: [
+      {
+        schema: 'myapp',
+        url: 'myapp://'
+      }
+    ]
+  }
+};
+
+// In your app code (e.g., in app.vue or a composable)
+import { App } from '@capacitor/app';
+import { useRouter } from 'vue-router';
+
+export function useDeepLinks() {
+  const router = useRouter();
+  
+  onMounted(() => {
+    App.addListener('appUrlOpen', (event) => {
+      console.log('App opened with URL:', event.url);
+      
+      // Parse the URL
+      const slug = event.url.split('myapp://').pop();
+      
+      // Navigate based on the deep link
+      if (slug) {
+        router.push('/' + slug);
+      }
+    });
+  });
+}
+```
+
+## Upgrading Capacitor
+
+To upgrade Capacitor in your project:
+
+```bash
+# Check for updates
+npx cap doctor
+
+# Update core dependencies
+npm install @capacitor/core@latest
+npm install @capacitor/cli@latest -D
+
+# Update platform dependencies
+npm install @capacitor/ios@latest @capacitor/android@latest
+
+# Update plugins
+npm install @capacitor/camera@latest @capacitor/storage@latest # etc.
+
+# Sync changes with native projects
+npx cap sync
+```
+
+## Best Practices
+
+### Error Handling
+
+Implement proper error handling for Capacitor plugins:
+
+```ts
+import { Camera, CameraResultType } from '@capacitor/camera';
+
+async function takePicture() {
+  try {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: true,
+      resultType: CameraResultType.Uri
+    });
+    // Process the image
+    return image;
+  } catch (error) {
+    if (error.message === 'User denied access to camera') {
+      // Handle permission denial
+      showPermissionMessage();
+    } else {
+      // Handle other errors
+      showErrorMessage(error.message);
+    }
+    console.error('Camera error:', error);
+    return null;
+  }
+}
+```
+
+### Permissions Handling
+
+Handle permissions gracefully:
+
+```ts
+import { Camera } from '@capacitor/camera';
+import { Permissions } from '@capacitor/core';
+
+async function checkAndRequestCameraPermission() {
+  // Check permission status
+  const permission = await Permissions.query({ name: 'camera' });
+  
+  if (permission.state === 'granted') {
+    // Permission already granted
+    return true;
+  } else if (permission.state === 'denied') {
+    // Show custom UI to explain why we need the permission
+    showPermissionExplanation('camera');
+    return false;
+  } else {
+    // Request permission
+    const requestResult = await Permissions.request({ name: 'camera' });
+    return requestResult.state === 'granted';
+  }
+}
+```
+
+### Testing Capacitor Plugins
+
+For testing Capacitor plugins in a non-native environment, use mocks:
+
+```ts
+// plugins/capacitor.ts
+import { Capacitor } from '@capacitor/core';
+
+export default defineNuxtPlugin((nuxtApp) => {
+  // Mock Capacitor plugins in development or when running tests
+  if (process.env.NODE_ENV === 'development' && !Capacitor.isNativePlatform()) {
+    mockCapacitorPlugins();
+  }
+});
+
+function mockCapacitorPlugins() {
+  // Example: Mock the Camera plugin
+  window.Capacitor = window.Capacitor || {};
+  window.Capacitor.Plugins = window.Capacitor.Plugins || {};
+  window.Capacitor.Plugins.Camera = {
+    getPhoto: async () => {
+      // Return mock data
+      return {
+        path: null,
+        webPath: '/mock-image.jpg',
+        format: 'jpeg',
+      };
+    },
+    checkPermissions: async () => ({ camera: 'granted' }),
+    requestPermissions: async () => ({ camera: 'granted' }),
+  };
+}
+```
+
+See the specific plugin documentation files in the `capacitor/` directory for more detailed information about each Capacitor feature.

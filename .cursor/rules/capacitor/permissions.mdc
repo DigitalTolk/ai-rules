@@ -1,0 +1,433 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Capacitor Permissions Management
+---
+description: Guidelines for managing permissions in Capacitor applications
+glob: "**/*permission*.{ts,js,vue}"
+---
+
+## Overview
+
+Many Capacitor plugins require permissions to access device features like the camera, microphone, location, and more. This guide outlines best practices for requesting and managing permissions in your Capacitor application.
+
+## Permission Types
+
+Capacitor provides access to the following common permission types:
+
+- Camera
+- Photos (Photo Library)
+- Geolocation
+- Notifications
+- Microphone
+- Calendar
+- Contacts
+- Background Location
+- Motion Sensors
+- Storage
+- Bluetooth
+
+## Checking Permissions
+
+Before requesting a permission, you should always check if it's already granted:
+
+```typescript
+import { Camera } from '@capacitor/camera';
+
+async function checkCameraPermission() {
+  const permissionState = await Camera.checkPermissions();
+  
+  // permissionState.camera will be one of:
+  // 'granted', 'denied', 'prompt', 'prompt-with-rationale'
+  return permissionState.camera;
+}
+```
+
+## Permission States
+
+Capacitor plugins use a common set of permission states:
+
+- `granted`: The permission has been granted by the user
+- `denied`: The permission has been denied by the user
+- `prompt`: The permission has not been requested yet
+- `prompt-with-rationale`: (Android only) Permission was denied once but can be requested again with rationale
+
+## Requesting Permissions
+
+Request permissions explicitly before using features that require them:
+
+```typescript
+import { Camera } from '@capacitor/camera';
+
+async function requestCameraPermission() {
+  const permissionState = await Camera.requestPermissions();
+  return permissionState.camera;
+}
+```
+
+## Generic Permissions API
+
+For a consistent way to handle permissions across plugins, use the generic Permissions API:
+
+```typescript
+import { Permissions } from '@capacitor/core';
+
+// Check permission
+async function checkPermission(permissionType) {
+  const permission = await Permissions.query({ name: permissionType });
+  return permission.state;
+}
+
+// Request permission
+async function requestPermission(permissionType) {
+  const permission = await Permissions.request({ name: permissionType });
+  return permission.state;
+}
+
+// Example usage
+async function setupCamera() {
+  const permissionType = 'camera';
+  const state = await checkPermission(permissionType);
+  
+  if (state === 'granted') {
+    // Permission already granted, proceed
+    return true;
+  } else if (state === 'denied') {
+    // Permission denied, show instructions for enabling
+    showPermissionInstructions(permissionType);
+    return false;
+  } else {
+    // Request permission
+    const newState = await requestPermission(permissionType);
+    return newState === 'granted';
+  }
+}
+```
+
+## Platform-Specific Considerations
+
+### iOS
+
+- iOS requires explicit permission descriptions in `Info.plist`
+- Permissions on iOS cannot be re-requested once denied
+- Users must go to device Settings to change permissions
+
+### Android
+
+- Android uses runtime permissions for Android 6.0+
+- Denied permissions can be re-requested with rationale
+- Some permissions require changes to `AndroidManifest.xml`
+
+## Permission Usage Descriptions
+
+### iOS Permission Strings
+
+For iOS, add these strings to your `Info.plist` file:
+
+```xml
+<!-- Camera -->
+<key>NSCameraUsageDescription</key>
+<string>We need camera access to take photos and scan documents.</string>
+
+<!-- Photo Library -->
+<key>NSPhotoLibraryUsageDescription</key>
+<string>We need photo library access to let you select images.</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>We need access to save photos to your library.</string>
+
+<!-- Location -->
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>We need your location to show nearby services.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>We need your location to provide navigation even when the app is in the background.</string>
+
+<!-- Microphone -->
+<key>NSMicrophoneUsageDescription</key>
+<string>We need microphone access to record audio notes.</string>
+
+<!-- Contacts -->
+<key>NSContactsUsageDescription</key>
+<string>We need access to contacts to help you find friends.</string>
+
+<!-- Calendar -->
+<key>NSCalendarsUsageDescription</key>
+<string>We need calendar access to schedule events.</string>
+
+<!-- Motion -->
+<key>NSMotionUsageDescription</key>
+<string>We need motion sensor data to track your fitness activity.</string>
+
+<!-- Bluetooth -->
+<key>NSBluetoothPeripheralUsageDescription</key>
+<string>We need bluetooth access to connect to accessories.</string>
+<key>NSBluetoothAlwaysUsageDescription</key>
+<string>We need bluetooth access to connect to accessories.</string>
+```
+
+### Android Permissions
+
+For Android, add these permissions to your `AndroidManifest.xml`:
+
+```xml
+<!-- Camera -->
+<uses-permission android:name="android.permission.CAMERA" />
+
+<!-- Storage (for photos) -->
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+<!-- Location -->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> <!-- For background location -->
+
+<!-- Microphone -->
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+<!-- Contacts -->
+<uses-permission android:name="android.permission.READ_CONTACTS" />
+<uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
+<!-- Calendar -->
+<uses-permission android:name="android.permission.READ_CALENDAR" />
+<uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
+<!-- Bluetooth -->
+<uses-permission android:name="android.permission.BLUETOOTH" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+```
+
+## Creating a Comprehensive Permissions Handler
+
+Here's a reusable composable for handling permissions:
+
+```typescript
+// composables/usePermissions.ts
+import { ref, reactive } from 'vue';
+import { Capacitor } from '@capacitor/core';
+import { Permissions } from '@capacitor/core';
+
+export function usePermissions() {
+  const permissionStates = reactive({});
+  const loading = ref(false);
+  const error = ref(null);
+  
+  // Check if running on a native platform
+  const isNative = Capacitor.isNativePlatform();
+  
+  // Check current permission state
+  async function checkPermission(permissionType) {
+    if (!isNative) {
+      return 'granted'; // Web platform, assume granted
+    }
+    
+    loading.value = true;
+    error.value = null;
+    
+    try {
+      const permission = await Permissions.query({ name: permissionType });
+      permissionStates[permissionType] = permission.state;
+      return permission.state;
+    } catch (err) {
+      console.error(`Error checking ${permissionType} permission:`, err);
+      error.value = err.message;
+      return 'unknown';
+    } finally {
+      loading.value = false;
+    }
+  }
+  
+  // Request permission
+  async function requestPermission(permissionType) {
+    if (!isNative) {
+      return 'granted'; // Web platform, assume granted
+    }
+    
+    loading.value = true;
+    error.value = null;
+    
+    try {
+      const permission = await Permissions.request({ name: permissionType });
+      permissionStates[permissionType] = permission.state;
+      return permission.state;
+    } catch (err) {
+      console.error(`Error requesting ${permissionType} permission:`, err);
+      error.value = err.message;
+      return 'unknown';
+    } finally {
+      loading.value = false;
+    }
+  }
+  
+  // Check and request if needed
+  async function ensurePermission(permissionType, options = { showRationale: true }) {
+    const state = await checkPermission(permissionType);
+    
+    if (state === 'granted') {
+      return true;
+    }
+    
+    if (state === 'denied' && Capacitor.getPlatform() === 'ios') {
+      // On iOS, once denied we can't request again
+      if (options.showRationale) {
+        showSettings(permissionType);
+      }
+      return false;
+    }
+    
+    // Request the permission
+    const newState = await requestPermission(permissionType);
+    return newState === 'granted';
+  }
+  
+  // Show instructions for enabling in settings
+  function showSettings(permissionType) {
+    // Create platform-specific instructions
+    const permissionName = formatPermissionName(permissionType);
+    const platform = Capacitor.getPlatform();
+    
+    let message = '';
+    
+    if (platform === 'ios') {
+      message = `Please enable ${permissionName} access in your device settings:\n
+                 Settings > Privacy > ${permissionName} > [Your App Name]`;
+    } else if (platform === 'android') {
+      message = `Please enable ${permissionName} access in your device settings:\n
+                 Settings > Apps > [Your App Name] > Permissions > ${permissionName}`;
+    }
+    
+    // Show the message to the user (implementation depends on your UI)
+    console.log(message);
+    return message;
+  }
+  
+  // Format permission type for display
+  function formatPermissionName(permissionType) {
+    const formatted = permissionType.charAt(0).toUpperCase() + 
+                      permissionType.slice(1).replace(/([A-Z])/g, ' $1');
+    return formatted;
+  }
+  
+  // Check multiple permissions at once
+  async function checkMultiplePermissions(permissions) {
+    const results = {};
+    
+    for (const permission of permissions) {
+      results[permission] = await checkPermission(permission);
+    }
+    
+    return results;
+  }
+  
+  return {
+    isNative,
+    permissionStates,
+    loading,
+    error,
+    checkPermission,
+    requestPermission,
+    ensurePermission,
+    showSettings,
+    checkMultiplePermissions
+  };
+}
+```
+
+## Using the Permissions Handler in Components
+
+```vue
+<template>
+  <div>
+    <button @click="takePicture" :disabled="loading">
+      {{ loading ? 'Checking permissions...' : 'Take Picture' }}
+    </button>
+    
+    <p v-if="error" class="error">{{ error }}</p>
+    
+    <div v-if="showSettings" class="settings-instructions">
+      <p>Camera access is required for this feature.</p>
+      <p>{{ settingsInstructions }}</p>
+      <button @click="showSettings = false">Dismiss</button>
+    </div>
+    
+    <img v-if="imageUrl" :src="imageUrl" alt="Captured image" />
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { usePermissions } from '@/composables/usePermissions';
+import { Camera, CameraResultType } from '@capacitor/camera';
+
+const { ensurePermission, loading, error } = usePermissions();
+const imageUrl = ref(null);
+const showSettings = ref(false);
+const settingsInstructions = ref('');
+
+async function takePicture() {
+  // Check and request camera permission
+  const hasPermission = await ensurePermission('camera');
+  
+  if (!hasPermission) {
+    // Show settings instructions if permission denied
+    showSettings.value = true;
+    settingsInstructions.value = `Go to Settings > Privacy > Camera > Toggle on for this app.`;
+    return;
+  }
+  
+  try {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: true,
+      resultType: CameraResultType.Uri
+    });
+    
+    imageUrl.value = image.webPath;
+  } catch (err) {
+    if (!err.message.includes('cancelled')) {
+      console.error('Camera error:', err);
+    }
+  }
+}
+</script>
+```
+
+## Permission Request Flow
+
+Follow this flow for requesting permissions:
+
+1. **Check First**: Always check the permission status before requesting it
+2. **Explain Before Asking**: Tell users why you need the permission before requesting it
+3. **Handle Denial Gracefully**: Provide alternatives or clear instructions when permissions are denied
+4. **Remember State**: Cache permission states to avoid repeatedly requesting permissions
+
+## Best Practices
+
+1. **Request at the Right Time**
+   - Request permissions contextually when the user needs the feature
+   - Don't request all permissions at app start
+   - Show why the permission is needed before requesting
+
+2. **Handle Denied Permissions**
+   - Provide clear instructions on how to enable permissions in Settings
+   - Offer alternative functionality when possible
+   - Don't repeatedly ask for denied permissions
+
+3. **Provide Visual Feedback**
+   - Show loading indicators during permission checks
+   - Clearly communicate the current permission state
+   - Provide visual cues for features that require permissions
+
+4. **Platform Differences**
+   - Remember that iOS and Android handle permissions differently
+   - On iOS, permissions can only be requested once
+   - On Android, implement rationale for re-requesting
+
+5. **Testing**
+   - Test all permission scenarios (granted, denied, not determined)
+   - Test on real devices, not just emulators
+   - Test permission flows after app updates

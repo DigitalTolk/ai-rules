@@ -1,0 +1,100 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Capacitor Features
+---
+description: Index of Capacitor features and plugins documentation for Nuxt applications
+glob: "**/capacitor/**/*.{ts,js,vue}"
+---
+
+## Overview
+
+This directory contains documentation for using Capacitor features and plugins in our Nuxt applications. Each file covers a specific Capacitor plugin or feature with examples and best practices tailored for Nuxt integration.
+
+## Main Configuration
+
+- [Capacitor Integration](mdc:../capacitor.mdc) - Main integration guide and project setup for Nuxt applications
+
+## Nuxt-Specific Integration
+
+| Feature | Description |
+|---------|-------------|
+| [Nuxt Composables](mdc:nuxt-composables.mdc) | Custom Vue composables for Capacitor features |
+| [Build Configuration](mdc:build-configuration.mdc) | Configuring Nuxt build for Capacitor |
+| [Platform Detection](mdc:platform-detection.mdc) | Detecting and adapting to different platforms |
+| [Testing](mdc:testing.mdc) | Testing Capacitor plugins in Nuxt applications |
+
+## Core Features
+
+| Feature | Description | Plugin Package |
+|---------|-------------|----------------|
+| [App](mdc:app.mdc) | Application lifecycle and deep linking | `@capacitor/app` |
+| [Device](mdc:device.mdc) | Device information and battery status | `@capacitor/device` |
+| [Storage](mdc:storage.mdc) | Data persistence with Preferences API | `@capacitor/preferences` |
+| [Network](mdc:network.mdc) | Network status and connectivity | `@capacitor/network` |
+| [Haptics](mdc:haptics.mdc) | Haptic feedback and vibrations | `@capacitor/haptics` |
+| [Keyboard](mdc:keyboard.mdc) | Keyboard control and visibility | `@capacitor/keyboard` |
+| [Status Bar](mdc:status-bar.mdc) | Status bar appearance | `@capacitor/status-bar` |
+| [Splash Screen](mdc:splash-screen.mdc) | Splash screen configuration | `@capacitor/splash-screen` |
+
+## Device Features
+
+| Feature | Description | Plugin Package |
+|---------|-------------|----------------|
+| [Camera](mdc:camera.mdc) | Camera access and photo capture | `@capacitor/camera` |
+| [Geolocation](mdc:geolocation.mdc) | Location services | `@capacitor/geolocation` |
+| [Microphone](mdc:microphone.mdc) | Audio recording and voice input | `@capacitor/microphone` |
+| [Motion](mdc:motion.mdc) | Accelerometer and device motion | `@capacitor/motion` |
+| [Filesystem](mdc:filesystem.mdc) | File system access | `@capacitor/filesystem` |
+| [Clipboard](mdc:clipboard.mdc) | Clipboard read/write | `@capacitor/clipboard` |
+| [Share](mdc:share.mdc) | Native share dialog | `@capacitor/share` |
+
+## User Engagement
+
+| Feature | Description | Plugin Package |
+|---------|-------------|----------------|
+| [Local Notifications](mdc:local-notifications.mdc) | Schedule local notifications | `@capacitor/local-notifications` |
+| [Push Notifications](mdc:push-notifications.mdc) | Push notification services | `@capacitor/push-notifications` |
+| [Dialog](mdc:dialog.mdc) | Native dialogs and alerts | `@capacitor/dialog` |
+| [Action Sheet](mdc:action-sheet.mdc) | Native action sheets | `@capacitor/action-sheet` |
+| [Toast](mdc:toast.mdc) | Toast notifications | `@capacitor/toast` |
+
+## Advanced Features
+
+| Feature | Description | Plugin Package |
+|---------|-------------|----------------|
+| [App Launcher](mdc:app-launcher.mdc) | Launch other apps | `@capacitor/app-launcher` |
+| [Browser](mdc:browser.mdc) | In-app browser | `@capacitor/browser` |
+| [Screen Reader](mdc:screen-reader.mdc) | Accessibility features | `@capacitor/screen-reader` |
+| [Text Zoom](mdc:text-zoom.mdc) | Text scaling for accessibility | `@capacitor/text-zoom` |
+| [Background Task](mdc:background-task.mdc) | Background processing | `@capacitor/background-task` |
+
+## Development Workflow
+
+| Feature | Description |
+|---------|-------------|
+| [Live Reload](mdc:live-reload.mdc) | Setting up live reload for Capacitor development |
+| [Debug Tools](mdc:debug-tools.mdc) | Tools and techniques for debugging Capacitor apps |
+| [Performance Monitoring](mdc:performance-monitoring.mdc) | Monitoring and improving app performance |
+
+## Best Practices
+
+| Topic | Description |
+|-------|-------------|
+| [Feature Detection](mdc:feature-detection.mdc) | How to detect available features |
+| [Error Handling](mdc:error-handling.mdc) | Handling errors gracefully in Capacitor apps |
+| [Permissions](mdc:permissions.mdc) | Managing app permissions effectively |
+| [Performance](mdc:performance.mdc) | Performance optimization for Capacitor apps |
+| [State Persistence](mdc:state-persistence.mdc) | Persisting app state across sessions |
+| [Offline Support](mdc:offline-support.mdc) | Building apps that work offline |
+
+## Deployment
+
+| Topic | Description |
+|-------|-------------|
+| [App Store Submission](mdc:app-store-submission.mdc) | Guidelines for iOS App Store submission |
+| [Google Play Submission](mdc:google-play-submission.mdc) | Guidelines for Google Play submission |
+| [Continuous Integration](mdc:continuous-integration.mdc) | Setting up CI/CD for Capacitor apps |
+| [Version Management](mdc:version-management.mdc) | Managing app versions and updates |
