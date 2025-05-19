@@ -1,0 +1,59 @@
+# .gitignore Rule for Nuxt 3 + Vite + TypeScript + PWA + Playwright
+
+This rule defines the recommended .gitignore entries for a modern Nuxt 3 project using Vite, TypeScript, PWA features, and Playwright for E2E testing.
+
+## Recommended .gitignore Entries
+
+```
+# Nuxt build and dev outputs
+.nuxt
+.output
+.nitro
+.cache
+dist
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# Playwright E2E outputs
+playwright-report/
+playwright/.cache/
+
+# PWA/Service Worker
+public/manifest.webmanifest
+public/service-worker.js
+
+# .cursor rules and metadata
+.cursor/
+
+# VSCode and editor settings
+.vscode/
+*.swp
+
+# Test coverage
+coverage/
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+```
+
+## Guidelines
+- Always keep sensitive files and local environment files out of version control.
+- Ignore build outputs, logs, and IDE/editor settings.
+- Exclude Playwright and PWA generated files.
+- Exclude the .cursor directory to avoid committing rule metadata.
