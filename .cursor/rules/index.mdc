@@ -20,6 +20,9 @@ Fundamental project structure, setup, and general development guidelines.
 | @logging.mdc                       | How to do backend logging                                   |
 | @utilities.mdc                     | Util functions                                              |
 | @task-list.mdc                     | Guidelines for creating and managing task lists             |
+| @best-coding-practices.mdc         | Best coding practices: functional programming, SOLID, clean code, function size, maintainability |
+| @pwa.mdc                           | Progressive Web App (PWA) setup and guidelines              |
+| @typescript.mdc                    | TypeScript usage and best practices      
 
 ## Frontend & UI
 
@@ -60,6 +63,7 @@ General guidelines for application testing.
 | Rule File                          | Description                                                 |
 | :--------------------------------- | :---------------------------------------------------------- |
 | @testing.mdc                       | Guidelines for testing the application with Vitest          |
+| @playwright-e2e.mdc                | End-to-end testing with Playwright                          |
 
 ## Features
 
