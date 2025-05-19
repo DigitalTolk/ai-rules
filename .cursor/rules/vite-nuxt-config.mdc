@@ -1,0 +1,82 @@
+# Vite & Nuxt Config Guidelines
+
+This document outlines best practices and generic rules for configuring `vite.config` and `nuxt.config` files in your project.
+
+---
+
+## 1. Environment Variables
+- Load environment variables using the appropriate method (`loadEnv` for Vite, `process.env` or Nuxt's built-in env support).
+- Merge loaded environment variables into `process.env` to ensure they are accessible throughout the app.
+
+## 2. Base URL
+- Set the `base` property using an environment variable (e.g., `VITE_BASE_URL`) with a sensible default (e.g., `/`).
+
+## 3. Plugins/Modules
+- Use plugins (Vite) or modules (Nuxt) to extend functionality (e.g., Vue, federation, auto-import, component auto-registration).
+- Configure plugins/modules with clear, maintainable options (e.g., directories for components, resolvers, dts output paths).
+- For micro-frontends, use federation plugins and clearly define remotes and shared dependencies.
+
+## 4. Path Aliases
+- Use the `resolve.alias` property (Vite) or `alias` (Nuxt) to define path shortcuts (e.g., `@` for `src` directory).
+- Include all relevant file extensions in `resolve.extensions` for smooth imports.
+
+## 5. Global Definitions
+- Use the `define` property (Vite) or `define`/`runtimeConfig` (Nuxt) to provide global constants or polyfills (e.g., `process.env`).
+
+## 6. CSS and Preprocessors
+- Configure CSS options, such as source maps for development and preprocessor options for SCSS/SASS/LESS.
+- Use `additionalData` to inject global styles if needed.
+
+## 7. Build Options
+- Set build options like `sourcemap` and `target` for better debugging and compatibility.
+
+## 8. Directory Structure
+- Keep config files (`vite.config.ts`, `nuxt.config.ts`) at the project root.
+- Use relative paths for directories in plugin/module options to maintain portability.
+
+## 9. Type Declarations
+- Generate type declaration files (`dts`) for auto-imported components and composables to improve TypeScript support.
+
+## 10. Comments and Documentation
+- Comment on non-obvious configuration options, especially URLs, plugin/module settings, and environment variable usage.
+- Reference documentation links for complex plugin/module options.
+
+---
+
+### Example (Vite)
+```ts
+import { defineConfig, loadEnv } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+export default defineConfig((command, mode) => {
+  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
+  return {
+    base: process.env.VITE_BASE_URL || '/',
+    plugins: [vue()],
+    resolve: {
+      alias: { '@': '/src' },
+      extensions: ['.js', '.ts', '.vue']
+    },
+    define: { 'process.env': {} },
+    css: { devSourcemap: true },
+    build: { sourcemap: true, target: 'esnext' }
+  }
+})
+```
+
+### Example (Nuxt)
+```ts
+import { defineNuxtConfig } from 'nuxt/config'
+
+export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      baseURL: process.env.NUXT_PUBLIC_BASE_URL || '/'
+    }
+  },
+  modules: [],
+  alias: { '@': '/src' },
+  css: ['~/assets/main.scss'],
+  build: { sourcemap: true },
+})
+```
