@@ -1,0 +1,88 @@
+# Playwright E2E Testing Rule
+
+## Default E2E Testing Tool
+- **Playwright** is the default and required tool for all end-to-end (E2E) testing in this project.
+- All new E2E tests must be written using Playwright.
+- Remove or migrate any legacy E2E tests from other frameworks to Playwright.
+
+## Behavior-Driven Testing (BDT)
+- All Playwright E2E tests **must** follow Behavior-Driven Testing (BDT) principles by default.
+- Use the @Gherkin syntax for test scenarios where possible, or structure tests using `describe`, `it`, and clear, human-readable steps.
+- Test descriptions should reflect user behavior and business requirements, not implementation details.
+- Example:
+  ```js
+  // Good
+  describe('User Login', () => {
+    it('should allow a user to log in with valid credentials', async ({ page }) => {
+      // ...steps
+    });
+  });
+  // Bad
+  describe('LoginComponent', () => {
+    it('calls login API', async ({ page }) => {
+      // ...steps
+    });
+  });
+  ```
+
+## Playwright E2E Test Best Practices
+
+1. **Test Structure**
+   - Organize tests by feature or user journey, not by technical component.
+   - Use `describe` blocks for features and `it` blocks for scenarios.
+   - Keep tests independent and idempotent.
+
+2. **Setup and Teardown**
+   - Use Playwright's `beforeEach` and `afterEach` hooks for setup/cleanup.
+   - Prefer test fixtures for reusable setup logic.
+
+3. **Selectors**
+   - Use data attributes (e.g., `data-testid`) for selecting elements.
+   - Avoid brittle selectors like CSS classes or text unless stable.
+
+4. **Assertions**
+   - Assert on user-visible outcomes, not internal state.
+   - Use Playwright's built-in expect API for assertions.
+
+5. **Test Data**
+   - Use realistic test data and cover edge cases.
+   - Clean up any data created during tests.
+
+6. **Parallelization & Performance**
+   - Write tests to be parallelizable by default.
+   - Avoid dependencies between tests.
+
+7. **Reporting & Debugging**
+   - Use Playwright's built-in reporters for CI.
+   - Use `--debug` and trace viewer for debugging failures.
+
+8. **CI Integration**
+   - Ensure all E2E tests run in CI and block merges on failure.
+   - Store Playwright config in the project root as `playwright.config.ts`.
+
+9. **Accessibility**
+   - Where possible, include accessibility checks as part of E2E flows.
+
+10. **Documentation**
+    - Document any custom commands, fixtures, or helpers in a `tests/README.md`.
+
+11. **Network Calls**
+    - Always use real network calls in E2E tests. Avoid mocking network requests unless absolutely necessary for a specific scenario.
+    - Tests should interact with the application as a real user would, ensuring end-to-end coverage.
+
+12. **Waiting for Changes**
+    - Use Playwright's event listeners, selectors, or observable state changes (e.g., `page.waitForSelector`, `page.waitForResponse`, `page.waitForEvent`) to wait for UI or network changes.
+    - **Do not** use arbitrary timeouts (e.g., `await page.waitForTimeout(1000)`) to wait for state changes. Always wait for a specific event or condition.
+
+## Enforced Rules
+- All E2E tests **must**:
+  - Use Playwright exclusively.
+  - Follow BDT principles and use clear, behavior-focused descriptions.
+  - Adhere to the best practices above.
+  - Use real network calls in all E2E tests (no unnecessary mocking).
+  - Use events or observable changes to wait for state changes, never random timeouts.
+- PRs with E2E tests not following these rules will be rejected.
+
+---
+
+For more, see @Playwright documentation and @Behavior-Driven Development.
