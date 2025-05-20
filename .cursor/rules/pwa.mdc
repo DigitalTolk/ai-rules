@@ -3,8 +3,15 @@
 description: Guidelines for setting up, using, and maintaining Progressive Web App (PWA) features in Nuxt applications using vite-plugin-pwa, with integration notes for Capacitor.
 glob: "**/vite.config.{ts,js}|**/pwa.config.{ts,js,json}|**/manifest.webmanifest|**/service-worker.{js,ts}|**/registerSW.{js,ts}"
 ---
+# PWA (Progressive Web App)
+---
+description: Guidelines for setting up, using, and maintaining Progressive Web App (PWA) features in Nuxt applications using vite-plugin-pwa, with integration notes for Capacitor.
+glob: "**/vite.config.{ts,js}|**/pwa.config.{ts,js,json}|**/manifest.webmanifest|**/service-worker.{js,ts}|**/registerSW.{js,ts}"
+---
 
 ## Overview
+
+> **Note:** If you are using vite-plugin-pwa version < 0.12.2, there is a known bug with `injectRegister` and `autoUpdate`. Upgrade to the latest version or use the workaround described in the @official docs.
 
 A Progressive Web App (PWA) delivers a native app-like experience on the web, including offline support, installability, and enhanced performance. In our Nuxt projects, PWA features are implemented using @vite-plugin-pwa, and are designed to work seamlessly with Capacitor for unified web/mobile deployment.
 
@@ -16,6 +23,10 @@ A Progressive Web App (PWA) delivers a native app-like experience on the web, in
    ```bash
    npm install vite-plugin-pwa --save-dev
    ```
+   You can also use alternative package managers:
+   - `pnpm add -D vite-plugin-pwa`
+   - `yarn add -D vite-plugin-pwa`
+   - `bun add -d vite-plugin-pwa`
 
 2. **Configure vite-plugin-pwa in `nuxt.config.ts`:**
    - Use the Nuxt Vite plugin integration:
@@ -27,6 +38,8 @@ A Progressive Web App (PWA) delivers a native app-like experience on the web, in
        plugins: [
          VitePWA({
            registerType: 'autoUpdate',
+           // For advanced service worker strategies, see:
+           // https://vite-pwa-org.netlify.app/guide/service-worker-strategies-and-behaviors/
            manifest: {
              name: 'Your App Name',
              short_name: 'App',
@@ -120,7 +133,15 @@ A Progressive Web App (PWA) delivers a native app-like experience on the web, in
 - Use composables for platform detection and feature toggling (see Capacitor rule).
 - Reference the @Capacitor Rule for unified build and deployment steps.
 
-## Resources
-- @vite-plugin-pwa Docs
-- @Capacitor Docs
+## Web-Only Plugin Compatibility
+
+- Some plugins or features may only be available on native platforms. Always check plugin documentation for web support.
+- Use platform detection to provide fallbacks or alternative UX for web/PWA users.
+
+## Further Reading
+
+- @Capacitor Official Documentation
+- @vite-plugin-pwa Official Guide
 - @Web.dev PWA Checklist
+
+For advanced configuration and troubleshooting, see the @vite-plugin-pwa official guide.

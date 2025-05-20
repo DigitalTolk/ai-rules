@@ -1,8 +1,3 @@
----
-description: 
-globs: 
-alwaysApply: false
----
 # Capacitor
 ---
 description: Guidelines for developing cross-platform mobile apps with Capacitor in Nuxt applications
@@ -472,3 +467,28 @@ function mockCapacitorPlugins() {
 ```
 
 See the specific plugin documentation files in the `capacitor/` directory for more detailed information about each Capacitor feature.
+
+## Capacitor v7 Migration Notes
+
+- Review the @Capacitor v7 Upgrade Guide for breaking changes and migration steps.
+- If you use custom native code, update your iOS plugins to use Swift Package Manager and review new Android Gradle requirements.
+- Some plugins may have updated APIs or require additional permissions in v7.
+
+## iOS Privacy Manifest (iOS 17+)
+
+- If targeting iOS 17 or later, ensure your app and any custom plugins include a @Privacy Manifest as required by Apple.
+- Review all plugins for compliance and update Info.plist as needed.
+
+## Web/PWA Plugin Compatibility
+
+- Some Capacitor plugins are only available on native platforms or have limited web support.
+- Use platform detection (see 'usePlatform' composable) to provide fallbacks or alternative implementations for web/PWA users.
+- Document any web-only or native-only features in your app's user guide or help section.
+
+## Further Reading
+
+- @Capacitor Official Documentation
+- @Capacitor Upgrade Guides
+- @Capacitor Plugin APIs
+- @Capacitor iOS Privacy Manifest
+- @Capacitor Community Forum
