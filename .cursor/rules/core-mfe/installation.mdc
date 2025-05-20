@@ -3,22 +3,108 @@
 ## Prerequisites
 - Vue 3
 - Pinia
-- vue-i18n
-- @dtolk/digitaltolk-ui (peer dependency)
+# @dtolk/core-mfe - Remote MFE Usage & Setup
 
-## Install
+## Consuming as a Remote Micro-Frontend (MFE)
 
+This MFE exposes its components (LoginPage, LoginForm, Notification) and composables (useAuth, useMultitenancy, etc.) via @Module Federation using `@originjs/vite-plugin-federation`.
+
+---
+
+### 1. Install Required Package
+
+```sh
+npm install @originjs/vite-plugin-federation
 ```
-npm install @dtolk/core-mfe
+
+---
+
+### 2. Example Vite Configuration (Host App)
+
+Add the federation plugin and configure the remote:
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import federation from '@originjs/vite-plugin-federation'
+
+export default defineConfig({
+  plugins: [
+    vue(),
+    federation({
+      name: 'shellApp',
+      remotes: {
+        coreMFE: 'https://core-mfe-prd.digitaltolk.net/assets/remoteEntry.js?v=1.0.0' // update with actual URL/version
+      },
+      shared: ['vue', 'pinia', 'vue-i18n']
+    })
+  ]
+})
 ```
 
-Or, if using as a remote module via Module Federation, ensure your host app is configured with the `@originjs/vite-plugin-federation` plugin.
+---
+
+### 3. Example Nuxt Configuration (Nuxt 3, Vite-based)
+
+Install the federation plugin and add it to your Nuxt config:
+
+```sh
+npm install @originjs/vite-plugin-federation
+```
+
+```ts
+// nuxt.config.ts
+import { defineNuxtConfig } from 'nuxt/config'
+import federation from '@originjs/vite-plugin-federation'
+
+export default defineNuxtConfig({
+  vite: {
+    plugins: [
+      federation({
+        name: 'shellApp',
+        remotes: {
+          coreMFE: 'https://core-mfe-prd.digitaltolk.net/assets/remoteEntry.js?v=1.0.0' // update with actual URL/version
+        },
+        shared: ['vue', 'pinia', 'vue-i18n']
+      })
+    ]
+  }
+})
+```
+
+---
+
+### 4. Import and Use Remote Components/Composables
+
+```js
+// Dynamic import (JS/TS)
+const LoginPage = await import('coreMFE/LoginPage');
+const LoginForm = await import('coreMFE/LoginForm');
+const Notification = await import('coreMFE/Notification');
+
+// Composables
+const { useAuth } = await import('coreMFE/useAuth');
+const { useMultitenancy } = await import('coreMFE/useMultitenancy');
+```
+
+Or in Vue SFC:
+
+```vue
+<script setup>
+import { defineAsyncComponent } from 'vue'
+const LoginPage = defineAsyncComponent(() => import('coreMFE/LoginPage'))
+const LoginForm = defineAsyncComponent(() => import('coreMFE/LoginForm'))
+</script>
+```
+
+---
 
 ## Peer Dependencies
 
 Add these to your `package.json` if not already present:
 
-```
+```json
 "peerDependencies": {
   "@dtolk/digitaltolk-ui": "^0.3.85",
   "pinia": "^2.0.0",
@@ -27,26 +113,21 @@ Add these to your `package.json` if not already present:
 }
 ```
 
-## Build
+---
+
+## Build (for local development)
 
 To build the MFE locally:
 
-```
+```sh
 npm install
 npm run build
 ```
 
-## Usage as a Remote Module
+---
 
-Configure your host app's `vite.config.ts`:
-
-```
-federation({
-  remotes: {
-    coreMFE: 'url_to_coreMFE_remoteEntry.js',
-  },
-  shared: ['vue', 'pinia', 'vue-i18n'],
-})
-```
-
-Then, import exposed modules from `coreMFE` in your host app. 
+## Notes
+- The remote entry URL may differ for staging/preview environments.
+- Ensure your host app shares compatible `vue`, `pinia`, and `vue-i18n` versions with the MFE.
+- No need to install `@dtolk/core-mfe` as an npm package when consuming as a remote.
+- See also: usage.mdc, components.mdc, composables.mdc

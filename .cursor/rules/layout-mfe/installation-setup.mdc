@@ -1,0 +1,97 @@
+# @dtolk/layout-mfe - Remote MFE Usage & Setup
+
+## Consuming as a Remote Micro-Frontend (MFE)
+
+This MFE exposes its components (HeaderNav, Sidebar, MainLayout) via @Module Federation using `@originjs/vite-plugin-federation`.
+
+### 1. Install Required Package
+
+```sh
+npm install @originjs/vite-plugin-federation
+```
+
+---
+
+### 2. Example Vite Configuration (Host App)
+
+Add the federation plugin and configure the remote:
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import federation from '@originjs/vite-plugin-federation'
+
+export default defineConfig({
+  plugins: [
+    vue(),
+    federation({
+      name: 'shellApp',
+      remotes: {
+        layoutMFE: 'https://layout-mfe-prd.digitaltolk.net/assets/remoteEntry.js?v=3.6.0'
+      },
+      shared: ['vue']
+    })
+  ]
+})
+```
+
+---
+
+### 3. Example Nuxt Configuration (Nuxt 3, Vite-based)
+
+Install the federation plugin and add it to your Nuxt config:
+
+```sh
+npm install @originjs/vite-plugin-federation
+```
+
+```ts
+// nuxt.config.ts
+import { defineNuxtConfig } from 'nuxt/config'
+import federation from '@originjs/vite-plugin-federation'
+
+export default defineNuxtConfig({
+  vite: {
+    plugins: [
+      federation({
+        name: 'shellApp',
+        remotes: {
+          layoutMFE: 'https://layout-mfe-prd.digitaltolk.net/assets/remoteEntry.js?v=3.6.0'
+        },
+        shared: ['vue']
+      })
+    ]
+  }
+})
+```
+
+---
+
+### 4. Import and Use Remote Components
+
+```js
+// Dynamic import
+const HeaderNav = await import('layoutMFE/HeaderNav');
+const Sidebar = await import('layoutMFE/Sidebar');
+const MainLayout = await import('layoutMFE/MainLayout');
+```
+
+Or in Vue SFC:
+
+```vue
+<script setup>
+import { defineAsyncComponent } from 'vue'
+const HeaderNav = defineAsyncComponent(() => import('layoutMFE/HeaderNav'))
+</script>
+```
+
+---
+
+## Notes
+- The remote entry URL may differ for staging/preview environments.
+- Ensure your host app shares compatible `vue` versions with the MFE.
+- No need to install `@dtolk/layout-mfe` as an npm package when consuming as a remote.
+
+---
+See also: components-headernav.mdc, components-sidebar.mdc, components-mainlayout.mdc

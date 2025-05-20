@@ -1,0 +1,39 @@
+# Sidebar Component Usage
+
+## Overview
+`Sidebar` is a flexible, collapsible sidebar navigation component. It supports menu items, nested children, pinning, and more options.
+
+## Import
+If using via module federation, import from the remote entry:
+```js
+const Sidebar = await import('layoutMFE/Sidebar');
+```
+
+## Props
+- `menuItems: Array<{ label, key, onClick?, icon?, children?, condition? }>` — Main menu items
+- `ctaOptionsVertical?: Array<{ label, key, onClick?, icon?, text? }>` — Vertical call-to-action options
+- `isFixedExpandByDefault?: boolean` — Sidebar expanded by default
+- `enableCollapseMode?: boolean` — Enable collapse/expand behavior
+- `sidebarWidth?: string` — Custom width
+- `enableMoreOptions?: boolean` — Enable pinning and more options
+- `sidebarStorageKey?: string` — Local storage key for pinned items
+
+## Events
+- `lockExpandSidebar` — Emitted when sidebar lock/expand state changes
+
+## Slots
+- `sidebar-footer` — Custom content for the sidebar footer
+
+## Example Usage
+```vue
+<Sidebar
+  :menuItems="menuItems"
+  :ctaOptionsVertical="ctaOptions"
+  :enableCollapseMode="true"
+  :enableMoreOptions="true"
+  sidebarStorageKey="mySidebarKey"
+/>
+```
+
+---
+See also: HeaderNav, MainLayout

@@ -1,0 +1,44 @@
+# HeaderNav Component Usage
+
+## Overview
+`HeaderNav` is a navigation bar component designed for use in micro-frontends. It supports branding, search, user menu, and language selection.
+
+## Import
+If using via module federation, import from the remote entry:
+```js
+const HeaderNav = await import('layoutMFE/HeaderNav');
+```
+
+## Props
+- `appLabel: string` — Application label (brand name)
+- `handleSearch?: Function` — Callback for search input
+- `navMenuOptions?: Array<{ label, key, onClick?, icon?, text? }>` — User menu options
+- `handleNavMenuSelect?: Function` — Callback for menu selection
+- `userDisplayName: string` — User's display name
+- `localizationLanguages?: Array<{ name, label, logo?, value }>` — Supported languages
+- `selectedLanguage?: string` — Current language
+- `handleLanguageChange?: Function` — Callback for language change
+- `resetSearch?: boolean` — Reset search input
+
+## Events
+- `searchFocus` — Emitted when the search field is focused
+
+## Slots
+- `header-menu-items` — Custom content on the right side of the header
+
+## Example Usage
+```vue
+<HeaderNav
+  :appLabel="'My App'"
+  :handleSearch="onSearch"
+  :navMenuOptions="navOptions"
+  :handleNavMenuSelect="onMenuSelect"
+  :userDisplayName="userName"
+  :localizationLanguages="languages"
+  :selectedLanguage="selectedLang"
+  :handleLanguageChange="onLangChange"
+/>
+```
+
+---
+See also: Sidebar, MainLayout
