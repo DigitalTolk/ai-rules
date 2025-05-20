@@ -1,0 +1,38 @@
+# Usage Examples
+
+## Importing Components (Module Federation)
+
+```vue
+<script setup>
+import LoginPage from 'coreMFE/LoginPage';
+</script>
+
+<template>
+  <LoginPage @loginSuccess="onLoginSuccess" />
+</template>
+```
+
+## Using Composables
+
+```ts
+import { useAuth } from 'coreMFE/useAuth';
+const { login, logout, isAuthenticated } = useAuth();
+
+import { useMultitenancy } from 'coreMFE/useMultitenancy';
+const { appTenant, loadTenant } = useMultitenancy();
+```
+
+## Setting Configs
+
+```ts
+import { useAuthConfig } from 'coreMFE/useAuthConfig';
+useAuthConfig().setConfig({ baseURL: 'https://auth.example.com', ... });
+```
+
+## Notifications
+
+```ts
+import { useNotification } from 'coreMFE/useNotification';
+const { triggerNotification } = useNotification();
+triggerNotification('Login successful!', 'success');
+``` 

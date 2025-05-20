@@ -1,0 +1,36 @@
+# Exposed Components
+
+The following components are exposed by the Core MFE:
+
+## LoginPage
+- Path: `coreMFE/LoginPage`
+- Props:
+  - `registerRedirectLink?: string`
+  - `forgotPasswordRedirectLink?: string`
+- Emits:
+  - `loginSuccess: (user: IUser)`
+- Usage:
+```vue
+<template>
+  <LoginPage
+    :registerRedirectLink="'/register'"
+    :forgotPasswordRedirectLink="'/forgot-password'"
+    @loginSuccess="onLoginSuccess"
+  />
+</template>
+```
+
+## LoginForm
+- Path: `coreMFE/LoginForm`
+- Props:
+  - `registerRedirectLink?: string`
+  - `forgotPasswordRedirectLink?: string`
+- Emits:
+  - `loginSuccess: (user: IUser)`
+
+## Notification
+- Path: `coreMFE/Notification`
+- Props:
+  - `message: string`
+  - `type?: string` (default: 'success')
+  - `duration?: number` (default: 3000) 

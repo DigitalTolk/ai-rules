@@ -1,0 +1,52 @@
+# Installation & Setup
+
+## Prerequisites
+- Vue 3
+- Pinia
+- vue-i18n
+- @dtolk/digitaltolk-ui (peer dependency)
+
+## Install
+
+```
+npm install @dtolk/core-mfe
+```
+
+Or, if using as a remote module via Module Federation, ensure your host app is configured with the `@originjs/vite-plugin-federation` plugin.
+
+## Peer Dependencies
+
+Add these to your `package.json` if not already present:
+
+```
+"peerDependencies": {
+  "@dtolk/digitaltolk-ui": "^0.3.85",
+  "pinia": "^2.0.0",
+  "vue": "^3.0.0",
+  "vue-i18n": "^10.0.4"
+}
+```
+
+## Build
+
+To build the MFE locally:
+
+```
+npm install
+npm run build
+```
+
+## Usage as a Remote Module
+
+Configure your host app's `vite.config.ts`:
+
+```
+federation({
+  remotes: {
+    coreMFE: 'url_to_coreMFE_remoteEntry.js',
+  },
+  shared: ['vue', 'pinia', 'vue-i18n'],
+})
+```
+
+Then, import exposed modules from `coreMFE` in your host app. 

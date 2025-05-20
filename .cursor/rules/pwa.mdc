@@ -1,96 +1,86 @@
 # PWA (Progressive Web App)
 ---
-description: Guidelines for setting up, using, and maintaining Progressive Web App (PWA) features in Nuxt applications using vite-plugin-pwa, with integration notes for Capacitor.
-glob: "**/vite.config.{ts,js}|**/pwa.config.{ts,js,json}|**/manifest.webmanifest|**/service-worker.{js,ts}|**/registerSW.{js,ts}"
----
-# PWA (Progressive Web App)
----
-description: Guidelines for setting up, using, and maintaining Progressive Web App (PWA) features in Nuxt applications using vite-plugin-pwa, with integration notes for Capacitor.
-glob: "**/vite.config.{ts,js}|**/pwa.config.{ts,js,json}|**/manifest.webmanifest|**/service-worker.{js,ts}|**/registerSW.{js,ts}"
+description: Guidelines for setting up, using, and maintaining Progressive Web App (PWA) features in Nuxt applications using @vite-pwa/nuxt, with integration notes for Capacitor.
+glob: "**/nuxt.config.{ts,js}|**/vite.config.{ts,js}|**/pwa.config.{ts,js,json}|**/manifest.webmanifest|**/service-worker.{js,ts}|**/registerSW.{js,ts}"
 ---
 
 ## Overview
 
-> **Note:** If you are using vite-plugin-pwa version < 0.12.2, there is a known bug with `injectRegister` and `autoUpdate`. Upgrade to the latest version or use the workaround described in the @official docs.
+> **Note:** For Nuxt 3 projects, always use the official `@vite-pwa/nuxt` module for PWA support. Do **not** use `vite-plugin-pwa` directly in Nuxt 3 projects. The `@vite-pwa/nuxt` module provides seamless integration and a top-level `pwa` config key in `nuxt.config.ts`.
 
-A Progressive Web App (PWA) delivers a native app-like experience on the web, including offline support, installability, and enhanced performance. In our Nuxt projects, PWA features are implemented using @vite-plugin-pwa, and are designed to work seamlessly with Capacitor for unified web/mobile deployment.
+A Progressive Web App (PWA) delivers a native app-like experience on the web, including offline support, installability, and enhanced performance. In our Nuxt projects, PWA features are implemented using `@vite-pwa/nuxt`, and are designed to work seamlessly with Capacitor for unified web/mobile deployment.
 
 **See also:** @Capacitor Rule for native integration and shared configuration.
 
-## PWA Setup in Nuxt (with Vite)
+## PWA Setup in Nuxt 3 (with @vite-pwa/nuxt)
 
-1. **Install vite-plugin-pwa:**
+1. **Install @vite-pwa/nuxt:**
    ```bash
-   npm install vite-plugin-pwa --save-dev
+   pnpm add @vite-pwa/nuxt
+   # or
+   npm install @vite-pwa/nuxt
+   # or
+   yarn add @vite-pwa/nuxt
    ```
-   You can also use alternative package managers:
-   - `pnpm add -D vite-plugin-pwa`
-   - `yarn add -D vite-plugin-pwa`
-   - `bun add -d vite-plugin-pwa`
 
-2. **Configure vite-plugin-pwa in `nuxt.config.ts`:**
-   - Use the Nuxt Vite plugin integration:
+2. **Configure @vite-pwa/nuxt in `nuxt.config.ts`:**
    ```ts
-   import { VitePWA } from 'vite-plugin-pwa';
-
    export default defineNuxtConfig({
-     vite: {
-       plugins: [
-         VitePWA({
-           registerType: 'autoUpdate',
-           // For advanced service worker strategies, see:
-           // https://vite-pwa-org.netlify.app/guide/service-worker-strategies-and-behaviors/
-           manifest: {
-             name: 'Your App Name',
-             short_name: 'App',
-             description: 'Your app description',
-             lang: 'en',
-             display: 'standalone',
-             background_color: '#ffffff',
-             theme_color: '#317EFB',
-             start_url: '/',
-             icons: [
-               {
-                 src: '/icon-192x192.png',
-                 sizes: '192x192',
-                 type: 'image/png',
-               },
-               {
-                 src: '/icon-512x512.png',
-                 sizes: '512x512',
-                 type: 'image/png',
-               },
-             ],
+     modules: [
+       '@vite-pwa/nuxt',
+       // ...other modules
+     ],
+     pwa: {
+       registerType: 'autoUpdate',
+       manifest: {
+         name: 'Your App Name',
+         short_name: 'App',
+         description: 'Your app description',
+         lang: 'en',
+         display: 'standalone',
+         background_color: '#ffffff',
+         theme_color: '#317EFB',
+         start_url: '/',
+         icons: [
+           {
+             src: '/icon-192x192.png',
+             sizes: '192x192',
+             type: 'image/png',
            },
-           workbox: {
-             cleanupOutdatedCaches: true,
-             runtimeCaching: [
-               {
-                 urlPattern: /^https:\/\/your-api\.domain\//,
-                 handler: 'NetworkFirst',
-                 options: {
-                   cacheName: 'api-cache',
-                   expiration: { maxEntries: 50, maxAgeSeconds: 86400 },
-                 },
-               },
-             ],
+           {
+             src: '/icon-512x512.png',
+             sizes: '512x512',
+             type: 'image/png',
            },
-           devOptions: {
-             enabled: true,
+         ],
+       },
+       workbox: {
+         cleanupOutdatedCaches: true,
+         runtimeCaching: [
+           {
+             urlPattern: /^https:\/\/your-api\.domain\//,
+             handler: 'NetworkFirst',
+             options: {
+               cacheName: 'api-cache',
+               expiration: { maxEntries: 50, maxAgeSeconds: 86400 },
+             },
            },
-         })
-       ]
-     }
+         ],
+       },
+       devOptions: {
+         enabled: true,
+       },
+     },
    })
    ```
 
 3. **Add icons and manifest:**
    - Place PWA icons in the `public/` directory.
-   - The manifest will be auto-generated by the plugin, but you can override it with a custom `public/manifest.webmanifest` if needed.
+   - The manifest will be auto-generated by the module, but you can override it with a custom `public/manifest.webmanifest` if needed.
 
 4. **Service Worker:**
-   - vite-plugin-pwa auto-generates a service worker for offline support and caching.
-   - For advanced use, add a custom `service-worker.ts` or `service-worker.js` in the project root and reference it in the plugin config.
+   - `@vite-pwa/nuxt` auto-generates a service worker for offline support and caching.
+   - For advanced use, add a custom `service-worker.ts` or `service-worker.js` in the project root and reference it in the module config.
 
 5. **Capacitor Integration:**
    - Ensure your PWA build output matches the `webDir` in `capacitor.config.ts` (see @Capacitor Rule).
@@ -128,8 +118,8 @@ A Progressive Web App (PWA) delivers a native app-like experience on the web, in
 
 ## Usage
 
-- To enable/disable PWA features, update the vite-plugin-pwa config in `nuxt.config.ts` or `vite.config.ts`.
-- For custom service worker logic, extend the default with your own file and reference it in the plugin config.
+- To enable/disable PWA features, update the `@vite-pwa/nuxt` config in `nuxt.config.ts`.
+- For custom service worker logic, extend the default with your own file and reference it in the module config.
 - Use composables for platform detection and feature toggling (see Capacitor rule).
 - Reference the @Capacitor Rule for unified build and deployment steps.
 
@@ -141,7 +131,7 @@ A Progressive Web App (PWA) delivers a native app-like experience on the web, in
 ## Further Reading
 
 - @Capacitor Official Documentation
-- @vite-plugin-pwa Official Guide
+- @@vite-pwa/nuxt Official Guide
 - @Web.dev PWA Checklist
 
-For advanced configuration and troubleshooting, see the @vite-plugin-pwa official guide.
+For advanced configuration and troubleshooting, see the @@vite-pwa/nuxt official guide.
