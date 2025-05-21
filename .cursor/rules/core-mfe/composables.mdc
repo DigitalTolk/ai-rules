@@ -3,10 +3,15 @@
 The following composables are exposed by the Core MFE:
 
 ## useAuth
+# Exposed Composables
+
+The following composables are exposed by the Core MFE:
+
+## useAuth
 - Provides authentication logic and state.
 - Usage:
 ```ts
-import { useAuth } from 'coreMFE/useAuth';
+import { useAuth } from 'coreMFE/index';
 const { login, logout, isAuthenticated, user, loadUserProfile, ... } = useAuth();
 ```
 
@@ -14,7 +19,7 @@ const { login, logout, isAuthenticated, user, loadUserProfile, ... } = useAuth()
 - Provides tenant management and multi-tenancy logic.
 - Usage:
 ```ts
-import { useMultitenancy } from 'coreMFE/useMultitenancy';
+import { useMultitenancy } from 'coreMFE/index';
 const { appTenant, loadTenant, tenantsList, loadTenantsList, ... } = useMultitenancy();
 ```
 
@@ -22,7 +27,7 @@ const { appTenant, loadTenant, tenantsList, loadTenantsList, ... } = useMultiten
 - Provides and manages authentication module config.
 - Usage:
 ```ts
-import { useAuthConfig } from 'coreMFE/useAuthConfig';
+import { useAuthConfig } from 'coreMFE/index';
 const { setConfig, getConfig } = useAuthConfig();
 ```
 
@@ -30,7 +35,7 @@ const { setConfig, getConfig } = useAuthConfig();
 - Provides and manages tenant module config.
 - Usage:
 ```ts
-import { useTenantConfig } from 'coreMFE/useTenantConfig';
+import { useTenantConfig } from 'coreMFE/index';
 const { setConfig, getConfig } = useTenantConfig();
 ```
 
@@ -38,7 +43,7 @@ const { setConfig, getConfig } = useTenantConfig();
 - Provides and manages verbiage module config.
 - Usage:
 ```ts
-import { useVerbiageConfig } from 'coreMFE/useVerbiageConfig';
+import { useVerbiageConfig } from 'coreMFE/index';
 const { setConfig, getConfig } = useVerbiageConfig();
 ```
 
@@ -46,7 +51,7 @@ const { setConfig, getConfig } = useVerbiageConfig();
 - Provides i18n and verbiage management.
 - Usage:
 ```ts
-import { useVerbiage } from 'coreMFE/useVerbiage';
+import { useVerbiage } from 'coreMFE/index';
 const { setupI18n, switchLanguage, getVerbiage, ... } = useVerbiage();
 ```
 
@@ -54,7 +59,7 @@ const { setupI18n, switchLanguage, getVerbiage, ... } = useVerbiage();
 - Provides notification logic for UI feedback.
 - Usage:
 ```ts
-import { useNotification } from 'coreMFE/useNotification';
+import { useNotification } from 'coreMFE/index';
 const { triggerNotification, notificationMessage, ... } = useNotification();
 ```
 
@@ -62,6 +67,6 @@ const { triggerNotification, notificationMessage, ... } = useNotification();
 - Generic API utility for HTTP requests.
 - Usage:
 ```ts
-import { useApi } from 'coreMFE/useApi';
+import { useApi } from 'coreMFE/index';
 const api = useApi<MyType>();
 ``` 

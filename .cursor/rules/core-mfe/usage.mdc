@@ -3,8 +3,21 @@
 ## Importing Components (Module Federation)
 
 ```vue
+# Usage Examples
+
+## Using coreMFE in Nuxt
+
+### Async Component Usage
+
+```vue
 <script setup>
-import LoginPage from 'coreMFE/LoginPage';
+import { defineAsyncComponent } from 'vue'
+const LoginPage = defineAsyncComponent(() => import('coreMFE/LoginPage'))
+
+function onLoginSuccess(event) {
+  // Handle login success (e.g., redirect, show notification, etc.)
+  console.log('Login successful:', event)
+}
 </script>
 
 <template>
@@ -12,21 +25,76 @@ import LoginPage from 'coreMFE/LoginPage';
 </template>
 ```
 
-## Using Composables
+### Using Composables
 
 ```ts
-import { useAuth } from 'coreMFE/useAuth';
-const { login, logout, isAuthenticated } = useAuth();
+import { useAuth, useMultitenancy, useVerbiage } from 'coreMFE/index'
 
-import { useMultitenancy } from 'coreMFE/useMultitenancy';
-const { appTenant, loadTenant } = useMultitenancy();
+const { isAuthenticated } = useAuth()
+const { loadTenant, appTenant } = useMultitenancy()
+const { initVerbiage } = useVerbiage()
 ```
 
-## Setting Configs
+### Setting Configs in a Nuxt Plugin
 
 ```ts
-import { useAuthConfig } from 'coreMFE/useAuthConfig';
-useAuthConfig().setConfig({ baseURL: 'https://auth.example.com', ... });
+// plugins/coreMFE-init.ts
+import { defineNuxtPlugin } from '#app'
+import { useAuth, useAuthConfig, useTenantConfig, useVerbiageConfig, useVerbiage } from 'coreMFE/index'
+
+export default defineNuxtPlugin((nuxtApp) => {
+  const config = useRuntimeConfig()
+  useAuthConfig().setConfig({
+    baseURL: config.public.AUTH_BASE,
+    loginEndpoint: '/api/v1/oauth/token',
+    authorizedRoles: [4],
+  })
+  useTenantConfig().setConfig({
+    baseURL: config.public.CONFIG_BASE,
+    defaultTenantUUID: config.public.TENANT_ID,
+    isProductionEnv: false
+  })
+  useVerbiageConfig().setConfig({
+    baseURL: config.public.VERBIAGE_BASE,
+    tag: 'dt-auth-admin',
+    i18nConfig: {
+      locale: 'en',
+      fallbackLocale: ['en', 'se'],
+      missingWarn: false
+    }
+  })
+  useAuth().initializeAuth()
+  nuxtApp.vueApp.use(useVerbiage().setupI18n())
+})
+```
+
+### Example: Using in app.vue
+
+```ts
+import { useAuth, useMultitenancy, useVerbiage } from 'coreMFE/index'
+
+const { loadTenant, appTenant } = useMultitenancy()
+const { initVerbiage } = useVerbiage()
+const { isAuthenticated } = useAuth()
+
+onMounted(() => {
+  loadTenant()
+  if (appTenant.value && appTenant.value.uuid) {
+    initVerbiage()
+  }
+})
+
+watch(() => isAuthenticated.value, (newVal) => {
+  if (newVal === true) {
+    router.push('/')
+  }
+})
+
+watch(() => appTenant.value, (tenant) => {
+  if (tenant && tenant.uuid) {
+    initVerbiage()
+  }
+})
 ```
 
 ## Notifications

@@ -3,11 +3,19 @@
 ## Prerequisites
 - Vue 3
 - Pinia
+# Installation & Setup
+
+## Prerequisites
+- Vue 3
+- Pinia
 # @dtolk/core-mfe - Remote MFE Usage & Setup
 
 ## Consuming as a Remote Micro-Frontend (MFE)
 
 This MFE exposes its components (LoginPage, LoginForm, Notification) and composables (useAuth, useMultitenancy, etc.) via @Module Federation using `@originjs/vite-plugin-federation`.
+
+> **Important:**
+> Do **not** install `@dtolk/core-mfe` as an npm package when consuming as a remote. Use module federation and remote imports only.
 
 ---
 
@@ -75,20 +83,46 @@ export default defineNuxtConfig({
 
 ---
 
-### 4. Import and Use Remote Components/Composables
+### 4. Nuxt Plugin Setup for coreMFE Configuration
 
-```js
-// Dynamic import (JS/TS)
-const LoginPage = await import('coreMFE/LoginPage');
-const LoginForm = await import('coreMFE/LoginForm');
-const Notification = await import('coreMFE/Notification');
+You **must** set up a Nuxt plugin to configure coreMFE (auth, tenant, verbiage, etc.):
 
-// Composables
-const { useAuth } = await import('coreMFE/useAuth');
-const { useMultitenancy } = await import('coreMFE/useMultitenancy');
+```ts
+// plugins/coreMFE-init.ts
+import { defineNuxtPlugin } from '#app'
+import { useAuth, useAuthConfig, useTenantConfig, useVerbiageConfig, useVerbiage } from 'coreMFE/index'
+
+export default defineNuxtPlugin((nuxtApp) => {
+  const config = useRuntimeConfig()
+  useAuthConfig().setConfig({
+    baseURL: config.public.AUTH_BASE,
+    loginEndpoint: '/api/v1/oauth/token',
+    authorizedRoles: [4],
+  })
+  useTenantConfig().setConfig({
+    baseURL: config.public.CONFIG_BASE,
+    defaultTenantUUID: config.public.TENANT_ID,
+    isProductionEnv: false
+  })
+  useVerbiageConfig().setConfig({
+    baseURL: config.public.VERBIAGE_BASE,
+    tag: 'dt-auth-admin',
+    i18nConfig: {
+      locale: 'en',
+      fallbackLocale: ['en', 'se'],
+      missingWarn: false
+    }
+  })
+  useAuth().initializeAuth()
+  nuxtApp.vueApp.use(useVerbiage().setupI18n())
+})
 ```
 
-Or in Vue SFC:
+---
+
+### 5. Import and Use Remote Components/Composables
+
+#### Async Component Loading (Recommended)
 
 ```vue
 <script setup>
@@ -96,6 +130,22 @@ import { defineAsyncComponent } from 'vue'
 const LoginPage = defineAsyncComponent(() => import('coreMFE/LoginPage'))
 const LoginForm = defineAsyncComponent(() => import('coreMFE/LoginForm'))
 </script>
+```
+
+#### Using Composables in Nuxt 3
+
+```ts
+import { useAuth, useMultitenancy, useVerbiage } from 'coreMFE/index'
+
+const { isAuthenticated } = useAuth()
+const { loadTenant, appTenant } = useMultitenancy()
+const { initVerbiage } = useVerbiage()
+```
+
+#### Dynamic Import (Advanced/JS only)
+
+```js
+const { useAuth } = await import('coreMFE/index');
 ```
 
 ---
@@ -129,5 +179,5 @@ npm run build
 ## Notes
 - The remote entry URL may differ for staging/preview environments.
 - Ensure your host app shares compatible `vue`, `pinia`, and `vue-i18n` versions with the MFE.
-- No need to install `@dtolk/core-mfe` as an npm package when consuming as a remote.
+- **Do not install `@dtolk/core-mfe` as an npm package when consuming as a remote.**
 - See also: usage.mdc, components.mdc, composables.mdc
