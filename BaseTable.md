@@ -1,0 +1,248 @@
+# BaseTable Component
+
+## Description
+A data table component for displaying, sorting, filtering, and interacting with tabular data. BaseTable is a wrapper around the n-data-table component, providing advanced table functionality with customizable appearance and behavior.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| allowCheckingNotLoaded | Boolean | false | Whether to allow checking rows that are not loaded |
+| bordered | Boolean | false | Whether to show table borders |
+| bottomBordered | Boolean | false | Whether to show bottom border |
+| checkedRowKeys | Array | undefined | The keys of checked rows (controlled mode) |
+| cascade | Boolean | true | Whether to cascade check children when checking parent row |
+| childrenKey | String | "children" | The key for accessing nested children rows |
+| columns | Array | [] | Table columns configuration |
+| data | Array | [] | Table data source |
+| defaultCheckedRowKeys | Array | [] | Default checked row keys (uncontrolled mode) |
+| defaultExpandedRowKeys | Array | [] | Default expanded row keys (uncontrolled mode) |
+| defaultExpandAll | Boolean | false | Whether to expand all rows by default |
+| expandedRowKeys | Boolean | undefined | The keys of expanded rows (controlled mode) |
+| paginationBehaviorOnFilter | String | "current" | Pagination behavior when filtering ("current", "first") |
+| flexHeight | Boolean | false | Whether table has flexible height |
+| indent | Number | 16 | Indentation for nested rows |
+| loading | Boolean | false | Whether table is in loading state |
+| maxHeight | Number/String | undefined | Maximum height of the table |
+| minHeight | Number/String | undefined | Minimum height of the table |
+| paginateSinglePage | Boolean | true | Whether to show pagination with only one page |
+| pagination | Boolean/Object | false | Pagination configuration or false to disable |
+| remote | Boolean | false | Whether table uses remote data |
+| renderCell | Function | undefined | Custom cell render function |
+| renderExpandIcon | Function | undefined | Custom expand icon render function |
+| rowClassName | String/Object/Function | undefined | Custom row class name |
+| rowKey | Function | undefined | Function to get unique key for each row |
+| rowProps | Function | undefined | Function to get props for each row |
+| scrollX | Number/String | undefined | Width of horizontal scroll |
+| scrollbarProps | Object | undefined | Props for the scrollbar |
+| singleColumn | Boolean | false | Whether table has only a single column |
+| singleLine | Boolean | true | Whether table cells are single line |
+| size | String | "medium" | Size of the table ("small", "medium", "large") |
+| spinProps | Object | undefined | Props for the loading spinner |
+| stickyExpandedRows | Boolean | false | Whether expanded rows are sticky |
+| striped | Boolean | false | Whether table has striped rows |
+| summary | Function | undefined | Function to generate summary row |
+| summaryPlacement | String | "bottom" | Placement of summary row ("top", "bottom") |
+| tableLayout | String | "auto" | Table layout ("auto", "fixed") |
+| virtualScroll | Boolean | false | Whether to use virtual scrolling for large datasets |
+| themeOverrides | Object | {} | Custom theme overrides for the component |
+
+## Events
+
+| Event | Parameters | Description |
+|-------|------------|-------------|
+| load | (page) | Triggered when page is loaded |
+| scroll | (event) | Triggered when table is scrolled |
+| update:checked:row:keys | (keys, row, checked) | Triggered when checked rows change |
+| update:expanded:row:keys | (keys) | Triggered when expanded rows change |
+| update:filters | (filters, filterOptions) | Triggered when filters change |
+| update:page | (page) | Triggered when page changes |
+| update:sorter | (sorter) | Triggered when sorting changes |
+| rowClick | (row, index) | Triggered when a row is clicked |
+
+## Slots
+
+The BaseTable component supports dynamic column slots. Each slot will be treated as a column in the table.
+
+For each slot, you can pass the following props to the slot element to configure the column:
+
+| Prop | Description |
+|------|-------------|
+| title | Column title (defaults to slot name) |
+| columnKey | Unique key for the column (defaults to slot name) |
+| visible | Whether the column is visible |
+| colSpan | Column span |
+| rowSpan | Row span |
+| sorter | Sorting function or boolean |
+| align | Text alignment in the column |
+| titleAlign | Title alignment |
+| cellProps | Props for the cell |
+| className | Custom class name |
+| defaultFilterOptionValue | Default filter option value |
+| defaultFilterOptionValues | Default filter option values |
+| defaultSortOrder | Default sort order |
+| disabled | Whether the column is disabled |
+| ellipsis | Whether text in the column can be ellipsised |
+| filter | Filter configuration |
+| filterMode | Filter mode |
+| filterMultiple | Whether multiple filtering is allowed |
+| resizable | Whether the column is resizable |
+| fixed | Whether the column is fixed (can be "left", "right") |
+| minWidth | Minimum width of the column |
+| maxWidth | Maximum width of the column |
+| width | Width of the column |
+
+## Usage Examples
+
+### Basic Usage
+```vue
+<template>
+  <BaseTable :data="tableData" :pagination="{ pageSize: 10 }">
+    <template #name="{ rowData }">
+      {{ rowData.name }}
+    </template>
+    <template #age="{ rowData }">
+      {{ rowData.age }}
+    </template>
+    <template #address="{ rowData }">
+      {{ rowData.address }}
+    </template>
+  </BaseTable>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { BaseTable } from '@digitaltolk/ui';
+
+const tableData = ref([
+  { id: 1, name: 'John Doe', age: 30, address: '123 Main St' },
+  { id: 2, name: 'Jane Smith', age: 25, address: '456 Oak Ave' },
+  // more data...
+]);
+</script>
+```
+
+### With Column Configuration
+```vue
+<template>
+  <BaseTable :data="tableData" :pagination="{ pageSize: 10 }">
+    <template #name="{ rowData }">
+      <div title="Name" :sorter="true" align="center">
+        {{ rowData.name }}
+      </div>
+    </template>
+    <template #age="{ rowData }">
+      <div title="Age" :sorter="true" align="center">
+        {{ rowData.age }}
+      </div>
+    </template>
+    <template #actions="{ rowData }">
+      <div title="Actions" align="center">
+        <BaseButton size="small" @click="editUser(rowData)">Edit</BaseButton>
+        <BaseButton size="small" @click="deleteUser(rowData)">Delete</BaseButton>
+      </div>
+    </template>
+  </BaseTable>
+</template>
+```
+
+### Row Selection
+```vue
+<template>
+  <BaseTable 
+    :data="tableData" 
+    :pagination="{ pageSize: 10 }"
+    :row-key="row => row.id"
+    v-model:checked-row-keys="selectedRowKeys"
+    @update:checked:row:keys="onSelectionChange"
+  >
+    <!-- Column slots -->
+  </BaseTable>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { BaseTable } from '@digitaltolk/ui';
+
+const tableData = ref([/* data */]);
+const selectedRowKeys = ref([]);
+
+const onSelectionChange = (keys) => {
+  console.log('Selected keys:', keys);
+};
+</script>
+```
+
+### With Loading State
+```vue
+<template>
+  <BaseTable 
+    :data="tableData" 
+    :loading="isLoading"
+    :pagination="{ pageSize: 10 }"
+  >
+    <!-- Column slots -->
+  </BaseTable>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { BaseTable } from '@digitaltolk/ui';
+
+const tableData = ref([]);
+const isLoading = ref(true);
+
+// Fetch data
+onMounted(async () => {
+  try {
+    const response = await fetchData();
+    tableData.value = response.data;
+  } finally {
+    isLoading.value = false;
+  }
+});
+</script>
+```
+
+### With Nested Data
+```vue
+<template>
+  <BaseTable 
+    :data="nestedData" 
+    :children-key="'children'"
+    :default-expand-all="true"
+  >
+    <!-- Column slots -->
+  </BaseTable>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { BaseTable } from '@digitaltolk/ui';
+
+const nestedData = ref([
+  { 
+    id: 1, 
+    name: 'Parent 1',
+    children: [
+      { id: 11, name: 'Child 1.1' },
+      { id: 12, name: 'Child 1.2' }
+    ]
+  },
+  // more nested data...
+]);
+</script>
+```
+
+## Styling
+
+The BaseTable component includes custom styling for various table elements including headers, cells, checkboxes, and pagination. You can further customize the appearance using the themeOverrides prop.
+
+## Implementation Details
+
+The BaseTable component wraps n-data-table while providing consistent styling in accordance with the DigitalTolk design system. It includes automatic slot-to-column transformation, row hover detection for popover integration, and customizable row interaction handling.
+
+## Related Components
+- BaseDataGrid - For more complex grid layouts with advanced features
+- BasePagination - For standalone pagination controls
+- BasePopover - For additional information on hover

@@ -1,0 +1,143 @@
+# BaseCode Component
+
+## Description
+Code display component with syntax highlighting for multiple programming languages. BaseCode uses highlight.js to provide high-quality syntax highlighting with support for JavaScript, CSS, PHP, and Java.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| code | String | undefined | The code to be displayed and highlighted |
+| language | String | "javascript" | Programming language for syntax highlighting (javascript, css, php, java) |
+| wordWrap | Boolean | false | Whether to wrap long lines of code |
+| showLineNumbers | Boolean | false | Whether to display line numbers |
+| themeOverrides | Object | {} | Custom theme overrides for styling |
+
+## Usage Examples
+
+### Basic JavaScript Example
+```vue
+<template>
+  <BaseCode
+    code="function greeting(name) {
+  return `Hello, ${name}!`;
+}
+
+console.log(greeting('World'));"
+    language="javascript"
+  />
+</template>
+```
+
+### CSS with Line Numbers
+```vue
+<template>
+  <BaseCode
+    code=".button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #45a049;
+}"
+    language="css"
+    :showLineNumbers="true"
+  />
+</template>
+```
+
+### PHP Example with Word Wrap
+```vue
+<template>
+  <BaseCode
+    code="<?php
+function factorial($n) {
+  if ($n <= 1) {
+    return 1;
+  }
+  return $n * factorial($n - 1);
+}
+
+echo 'Factorial of 5 is: ' . factorial(5);"
+    language="php"
+    :wordWrap="true"
+  />
+</template>
+```
+
+### Java Example with Custom Styling
+```vue
+<template>
+  <BaseCode
+    code="public class HelloWorld {
+  public static void main(String[] args) {
+    System.out.println(\"Hello, World!\");
+  }
+}"
+    language="java"
+    :themeOverrides="{
+      fontSize: '14px',
+      borderRadius: '8px',
+      fontFamily: 'JetBrains Mono, monospace'
+    }"
+  />
+</template>
+```
+
+### Dynamic Code Example
+```vue
+<template>
+  <div>
+    <BaseSelect v-model:value="selectedLanguage" :options="languageOptions" />
+    <BaseCode
+      :code="codeExamples[selectedLanguage]"
+      :language="selectedLanguage"
+      :showLineNumbers="true"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const selectedLanguage = ref('javascript');
+
+const languageOptions = [
+  { label: 'JavaScript', value: 'javascript' },
+  { label: 'CSS', value: 'css' },
+  { label: 'PHP', value: 'php' },
+  { label: 'Java', value: 'java' }
+];
+
+const codeExamples = {
+  javascript: 'const sum = (a, b) => a + b;',
+  css: 'body { font-family: sans-serif; }',
+  php: '<?php echo "Hello PHP"; ?>',
+  java: 'System.out.println("Hello Java");'
+};
+</script>
+```
+
+## Component Behavior Notes
+- The component uses highlight.js for syntax highlighting
+- Currently supports four languages: JavaScript (default), CSS, PHP, and Java
+- Code blocks have a light gray background and rounded corners by default
+- Line numbers can be displayed on the left side when showLineNumbers is true
+- Long lines can be wrapped when wordWrap is true
+
+## Styling
+The component includes default styling:
+- Light gray background (#f6f6f6)
+- 6px border radius
+
+You can customize the appearance through the themeOverrides prop.
+
+## Related Components
+- None directly related, but can be used within BaseCard or other container components for better presentation

@@ -1,0 +1,155 @@
+# BaseGrid Component
+
+## Description
+The BaseGrid component is a flexible grid layout system implemented as two components: BaseRow and BaseColumn. It provides a responsive and customizable grid system for arranging content in rows and columns, with support for different breakpoints.
+
+## Components
+
+### BaseRow
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| cols | Number, Object | 24 | Number of columns in the grid |
+| collapsed | Boolean | false | Whether the grid is collapsed |
+| collapsedRows | Number | 1 | Number of rows to show when collapsed |
+| layoutShiftDisabled | Boolean | false | Whether to disable layout shift |
+| responsive | String | 'screen' | Responsive mode - 'self' or 'screen' |
+| itemResponsive | Boolean | false | Whether items should respond to screen size |
+| xGap | Number, Object | 0 | Horizontal gap between grid items |
+| yGap | Number, Object | 0 | Vertical gap between grid items |
+
+#### Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Should contain BaseColumn components |
+
+### BaseColumn
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| offset | Number, Object | 0 | Number of columns to offset |
+| span | Number, Object | 1 | Number of columns to span |
+| suffix | Boolean | false | Whether this is a suffix column |
+| xs | Number | undefined | Column span at extra small breakpoint |
+| sm | Number | undefined | Column span at small breakpoint |
+| md | Number | undefined | Column span at medium breakpoint |
+| lg | Number | undefined | Column span at large breakpoint |
+| xl | Number | undefined | Column span at extra large breakpoint |
+| xxl | Number | undefined | Column span at extra extra large breakpoint |
+
+#### Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Column content |
+
+## Usage Examples
+
+### Basic Grid
+
+```vue
+<template>
+  <BaseRow :x-gap="12" :y-gap="8">
+    <BaseColumn :span="12">
+      <div class="content-box">Column 1</div>
+    </BaseColumn>
+    <BaseColumn :span="12">
+      <div class="content-box">Column 2</div>
+    </BaseColumn>
+  </BaseRow>
+</template>
+
+<script setup>
+import { BaseRow, BaseColumn } from '@digitaltolk/ui';
+</script>
+
+<style scoped>
+.content-box {
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 4px;
+}
+</style>
+```
+
+### Responsive Grid
+
+```vue
+<template>
+  <BaseRow :x-gap="12" :y-gap="8" responsive="screen" itemResponsive>
+    <BaseColumn :span="24" :md="12" :lg="8">
+      <div class="content-box">
+        Full width on small screens, half width on medium, one-third on large
+      </div>
+    </BaseColumn>
+    <BaseColumn :span="24" :md="12" :lg="8">
+      <div class="content-box">
+        Full width on small screens, half width on medium, one-third on large
+      </div>
+    </BaseColumn>
+    <BaseColumn :span="24" :md="24" :lg="8">
+      <div class="content-box">
+        Full width on small and medium screens, one-third on large
+      </div>
+    </BaseColumn>
+  </BaseRow>
+</template>
+```
+
+### Grid with Offsets
+
+```vue
+<template>
+  <BaseRow :cols="24" :x-gap="8">
+    <BaseColumn :span="12" :offset="6">
+      <div class="content-box">Centered Column (offset by 6)</div>
+    </BaseColumn>
+    <BaseColumn :span="8" :offset="4">
+      <div class="content-box">Left of center (offset by 4)</div>
+    </BaseColumn>
+    <BaseColumn :span="8" :offset="4">
+      <div class="content-box">Right of center (offset by 4)</div>
+    </BaseColumn>
+  </BaseRow>
+</template>
+```
+
+### Nested Grids
+
+```vue
+<template>
+  <BaseRow :x-gap="8" :y-gap="8">
+    <BaseColumn :span="12">
+      <div class="parent-box">
+        <BaseRow :x-gap="4">
+          <BaseColumn :span="12">
+            <div class="nested-box">Nested Column 1</div>
+          </BaseColumn>
+          <BaseColumn :span="12">
+            <div class="nested-box">Nested Column 2</div>
+          </BaseColumn>
+        </BaseRow>
+      </div>
+    </BaseColumn>
+    <BaseColumn :span="12">
+      <div class="content-box">Normal Column</div>
+    </BaseColumn>
+  </BaseRow>
+</template>
+```
+
+## Behavior Notes
+
+- The grid uses a 24-column system by default, but this can be customized with the `cols` prop.
+- The `responsive` prop determines how the grid adapts to different screen sizes.
+- When `itemResponsive` is true, columns will use breakpoint props (xs, sm, md, lg, xl, xxl).
+- Gaps between columns and rows can be specified with `xGap` and `yGap` props.
+
+## Related Components
+- BaseSpace - For simpler spacing without the full grid system
+- BaseLayout - For overall page layout structure

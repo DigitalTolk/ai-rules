@@ -1,0 +1,328 @@
+# Specialized Components Rule
+
+## Description
+This rule provides guidance for implementing specialized components from the DigitalTolk UI library. These components offer advanced functionality for specific use cases such as data visualization, date/time selection, and rich text editing.
+
+## Available Specialized Components
+
+### Loading & Status Components
+- BaseSpin - Loading indicator component for content loading states
+
+### Data Visualization Components
+- BaseChart - Data visualization component for various chart types
+- BaseTimeline - Timeline component for displaying chronological events
+- BaseMetric - Numeric metrics display component
+
+### Date & Time Components
+- BaseCalendar - Calendar display and date selection component
+- BaseDatePicker - Date selection component with calendar interface
+- BaseTimepicker - Time selection component
+
+### Input & Editing Components
+- BaseTextEditor - Rich text editor component
+- BaseLocationField - Location input component with map integration
+- BaseAutoComplete - Auto-complete text input with suggestions
+
+### Layout Components
+- BasePageHeader - Page header component with title and actions
+- BaseMenuCustom - Customizable menu component
+
+## Implementation Guidelines
+
+### 1. Spin Component
+```jsx
+import { BaseSpin } from '@digitaltolk/ui';
+
+const SpinExample = () => {
+  return (
+    <BaseSpin spinning={loading} tip="Loading...">
+      <div>Content that will be loading</div>
+    </BaseSpin>
+  );
+};
+```
+
+### 2. Chart Component
+```jsx
+import { BaseChart } from '@digitaltolk/ui';
+
+const ChartExample = () => {
+  const data = [
+    { month: 'Jan', sales: 38 },
+    { month: 'Feb', sales: 52 },
+    { month: 'Mar', sales: 61 },
+    { month: 'Apr', sales: 45 },
+    { month: 'May', sales: 48 },
+    { month: 'Jun', sales: 38 },
+  ];
+
+  return (
+    <BaseChart
+      type="bar"
+      data={data}
+      xField="month"
+      yField="sales"
+      title="Monthly Sales"
+    />
+  );
+};
+```
+
+### 3. Calendar & Date Components
+```jsx
+import { BaseCalendar, BaseDatePicker, BaseTimepicker } from '@digitaltolk/ui';
+
+const DateComponentsExample = () => {
+  return (
+    <>
+      <BaseCalendar
+        onSelect={handleDateSelect}
+        onPanelChange={handlePanelChange}
+      />
+      
+      <BaseDatePicker
+        onChange={handleDateChange}
+        format="YYYY-MM-DD"
+        placeholder="Select date"
+      />
+      
+      <BaseTimepicker
+        onChange={handleTimeChange}
+        format="HH:mm"
+        placeholder="Select time"
+      />
+    </>
+  );
+};
+```
+
+### 4. Text Editor Component
+```jsx
+import { BaseTextEditor } from '@digitaltolk/ui';
+
+const TextEditorExample = () => {
+  return (
+    <BaseTextEditor
+      value={content}
+      onChange={handleContentChange}
+      placeholder="Write your content here..."
+      toolbarOptions={['bold', 'italic', 'link', 'list']}
+    />
+  );
+};
+```
+
+### 5. Autocomplete Component
+```jsx
+import { BaseAutoComplete } from '@digitaltolk/ui';
+
+const AutocompleteExample = () => {
+  const options = [
+    { value: 'javascript', label: 'JavaScript' },
+    { value: 'typescript', label: 'TypeScript' },
+    { value: 'react', label: 'React' },
+    { value: 'vue', label: 'Vue' },
+  ];
+
+  return (
+    <BaseAutoComplete
+      options={options}
+      onSearch={handleSearch}
+      onSelect={handleSelect}
+      placeholder="Search programming languages"
+    />
+  );
+};
+```
+
+## Best Practices
+
+### 1. Loading State Management
+- Use BaseSpin for consistent loading indicators
+- Add descriptive loading messages
+- Apply loading states at appropriate component levels
+- Handle timeout scenarios for long-running operations
+
+### 2. Data Visualization
+- Choose the appropriate chart type for your data
+- Implement responsive charts that resize with the container
+- Add proper legends, labels, and tooltips
+- Use consistent color schemes across charts
+
+### 3. Date & Time Selection
+- Use appropriate date formats based on locale
+- Implement date validation and constraints
+- Provide clear date range selection
+- Handle timezone considerations
+
+### 4. Rich Text Editing
+- Configure appropriate toolbar options
+- Handle content sanitization
+- Implement proper content validation
+- Consider mobile editing experience
+
+## Common Patterns
+
+### 1. Dashboard with Charts
+```jsx
+const DashboardWithCharts = () => {
+  return (
+    <BaseGrid container spacing={3}>
+      <BaseGrid item xs={12} lg={6}>
+        <BaseCard title="Revenue">
+          <BaseChart
+            type="line"
+            data={revenueData}
+            xField="month"
+            yField="value"
+            seriesField="category"
+          />
+        </BaseCard>
+      </BaseGrid>
+      
+      <BaseGrid item xs={12} lg={6}>
+        <BaseCard title="User Growth">
+          <BaseChart
+            type="area"
+            data={userData}
+            xField="date"
+            yField="count"
+          />
+        </BaseCard>
+      </BaseGrid>
+      
+      <BaseGrid item xs={12}>
+        <BaseCard title="Key Metrics">
+          <BaseGrid container spacing={2}>
+            <BaseGrid item xs={12} md={4}>
+              <BaseMetric
+                title="Total Users"
+                value={totalUsers}
+                trend={userTrend}
+                prefix={<BaseIcon type="user" />}
+              />
+            </BaseGrid>
+            <BaseGrid item xs={12} md={4}>
+              <BaseMetric
+                title="Revenue"
+                value={revenue}
+                trend={revenueTrend}
+                prefix="$"
+              />
+            </BaseGrid>
+            <BaseGrid item xs={12} md={4}>
+              <BaseMetric
+                title="Conversion Rate"
+                value={conversionRate}
+                trend={conversionTrend}
+                suffix="%"
+              />
+            </BaseGrid>
+          </BaseGrid>
+        </BaseCard>
+      </BaseGrid>
+    </BaseGrid>
+  );
+};
+```
+
+### 2. Date Range Picker
+```jsx
+const DateRangePickerExample = () => {
+  return (
+    <BaseForm>
+      <BaseForm.Item label="Date Range">
+        <BaseDatePicker.RangePicker
+          value={dateRange}
+          onChange={handleDateRangeChange}
+          format="YYYY-MM-DD"
+          disabledDate={disabledDate}
+          ranges={{
+            'Today': [moment(), moment()],
+            'This Week': [moment().startOf('week'), moment().endOf('week')],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+          }}
+        />
+      </BaseForm.Item>
+      
+      <BaseButton onClick={handleFilter}>Filter Data</BaseButton>
+    </BaseForm>
+  );
+};
+```
+
+### 3. Rich Text Editor with Preview
+```jsx
+const RichTextEditorWithPreview = () => {
+  const [content, setContent] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
+  
+  return (
+    <BaseCard>
+      <BaseTabs
+        activeKey={showPreview ? 'preview' : 'editor'}
+        onChange={(key) => setShowPreview(key === 'preview')}
+        items={[
+          { key: 'editor', tab: 'Editor' },
+          { key: 'preview', tab: 'Preview' },
+        ]}
+      />
+      
+      {showPreview ? (
+        <div className="preview">
+          <div dangerouslySetInnerHTML={{ __html: content }} />
+        </div>
+      ) : (
+        <BaseTextEditor
+          value={content}
+          onChange={setContent}
+          placeholder="Write your content here..."
+        />
+      )}
+    </BaseCard>
+  );
+};
+```
+
+### 4. Location Picker with Map
+```jsx
+const LocationPickerWithMap = () => {
+  return (
+    <BaseForm>
+      <BaseForm.Item label="Location">
+        <BaseLocationField
+          value={location}
+          onChange={handleLocationChange}
+          showMap
+          mapHeight={300}
+          placeholder="Search for a location"
+        />
+      </BaseForm.Item>
+      
+      <BaseForm.Item>
+        <BaseButton type="primary">Save Location</BaseButton>
+      </BaseForm.Item>
+    </BaseForm>
+  );
+};
+```
+
+## Testing Checklist
+
+- [ ] Charts render data correctly
+- [ ] Loading indicators display properly
+- [ ] Date and time components select correct values
+- [ ] Text editor handles various content types
+- [ ] Location field properly captures coordinates
+- [ ] Autocomplete suggestions work as expected
+- [ ] Components adjust to different screen sizes
+- [ ] Components handle error states gracefully
+- [ ] Accessibility requirements are met
+- [ ] Performance optimization for data-heavy components
+
+## Notes
+- Configure specialized components based on specific project requirements
+- Consider performance implications of heavy components
+- Test specialized components thoroughly across devices
+- Document custom configurations for team reference
+- Keep UI consistent when using specialized components

@@ -1,0 +1,162 @@
+# BaseCollapse Component
+
+## Description
+Collapsible content component for progressive disclosure. BaseCollapse allows sections of content to be expanded or collapsed, helping to organize information and reduce visual clutter. It supports both accordion and non-accordion modes.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| accordion | Boolean | false | Whether only one panel can be expanded at a time |
+| arrowPlacement | String | "right" | Position of the arrow indicator ("left" or "right") |
+| defaultExpandedNames | String/Number/Array/null | null | Default expanded panels when component is uncontrolled |
+| displayDirective | String | "if" | Directive used for panel content display ("if" or "show") |
+| expandedNames | String/Number/Array/null | undefined | Names of currently expanded panels (for controlled behavior) |
+| themeOverrides | Object | {} | Custom theme overrides for styling |
+
+## Events
+
+| Event | Parameters | Description |
+|-------|------------|-------------|
+| update:expanded-names | expandedNames | Emitted when expanded panels change (for v-model) |
+| item-header-click | item | Emitted when a panel header is clicked |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Container for collapse items |
+| arrow | Custom collapse arrow indicator (receives `collapsed` boolean) |
+
+## Usage Examples
+
+### Basic Collapse with Multiple Panels
+```vue
+<template>
+  <BaseCollapse>
+    <n-collapse-item title="Panel 1" name="1">
+      <p>Content for panel 1</p>
+    </n-collapse-item>
+    <n-collapse-item title="Panel 2" name="2">
+      <p>Content for panel 2</p>
+    </n-collapse-item>
+    <n-collapse-item title="Panel 3" name="3">
+      <p>Content for panel 3</p>
+    </n-collapse-item>
+  </BaseCollapse>
+</template>
+```
+
+### Accordion Mode (Only One Panel Open)
+```vue
+<template>
+  <BaseCollapse accordion>
+    <n-collapse-item title="Features" name="1">
+      <ul>
+        <li>Feature 1</li>
+        <li>Feature 2</li>
+        <li>Feature 3</li>
+      </ul>
+    </n-collapse-item>
+    <n-collapse-item title="Requirements" name="2">
+      <p>System requirements information...</p>
+    </n-collapse-item>
+    <n-collapse-item title="Installation" name="3">
+      <p>Installation instructions...</p>
+    </n-collapse-item>
+  </BaseCollapse>
+</template>
+```
+
+### Controlled Expansion with v-model
+```vue
+<template>
+  <div>
+    <BaseButton @click="togglePanels">Toggle Panels</BaseButton>
+    <BaseCollapse v-model:expanded-names="expandedPanels">
+      <n-collapse-item title="Section A" name="a">
+        <p>Content for section A</p>
+      </n-collapse-item>
+      <n-collapse-item title="Section B" name="b">
+        <p>Content for section B</p>
+      </n-collapse-item>
+      <n-collapse-item title="Section C" name="c">
+        <p>Content for section C</p>
+      </n-collapse-item>
+    </BaseCollapse>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const expandedPanels = ref(['a']);
+
+const togglePanels = () => {
+  if (expandedPanels.value.includes('a')) {
+    expandedPanels.value = ['b', 'c'];
+  } else {
+    expandedPanels.value = ['a'];
+  }
+};
+</script>
+```
+
+### Custom Arrow Placement and Icon
+```vue
+<template>
+  <BaseCollapse arrow-placement="left">
+    <template #arrow="{ collapsed }">
+      <BaseIcon>{{ collapsed ? 'add' : 'remove' }}</BaseIcon>
+    </template>
+    <n-collapse-item title="Expandable Section" name="1">
+      <p>This section has a custom expand/collapse icon on the left.</p>
+    </n-collapse-item>
+  </BaseCollapse>
+</template>
+```
+
+### With Event Handling
+```vue
+<template>
+  <BaseCollapse
+    @update:expanded-names="handleExpandedNamesChange"
+    @item-header-click="handleHeaderClick"
+  >
+    <n-collapse-item title="Click Me" name="1">
+      <p>Panel content here</p>
+    </n-collapse-item>
+    <n-collapse-item title="Click Me Too" name="2">
+      <p>More panel content</p>
+    </n-collapse-item>
+  </BaseCollapse>
+</template>
+
+<script setup>
+const handleExpandedNamesChange = (names) => {
+  console.log('Expanded panels:', names);
+};
+
+const handleHeaderClick = (item) => {
+  console.log('Header clicked:', item);
+};
+</script>
+```
+
+## Component Behavior Notes
+- The component is a wrapper around the Naive UI `n-collapse` component
+- When using accordion mode, opening one panel automatically closes others
+- The `displayDirective` prop controls whether collapsed content is hidden using v-if (removed from DOM) or v-show (hidden with CSS)
+- Panel names can be strings, numbers, or an array of both for multiple selection
+- Default arrow icons are material icons: "arrow_drop_down" and "arrow_drop_up"
+
+## Styling
+The component includes custom styling:
+- Bold headers with 14px font size
+- Headers with equal spacing using justify-content: space-between
+- Default arrow indicators on the right side
+- Custom arrow rotation behavior on panel expansion/collapse
+
+## Related Components
+- BaseIcon - Used for default arrow indicators
+- BaseWrapper - Provides base functionality for UI components

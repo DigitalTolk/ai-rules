@@ -1,0 +1,105 @@
+# BaseAvatarGroup Component
+
+## Description
+Component for displaying groups of user avatars with configurable layout and overflow handling. The BaseAvatarGroup component renders multiple avatars in a row or column with customizable styling and behavior options.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| expandOnHover | Boolean | false | When true, expands all avatars on hover for better visibility |
+| max | Number | undefined | Maximum number of avatars to display before showing a "+X" indicator |
+| maxStyle | String/Object | undefined | Custom style for the "+X" indicator element |
+| options | Array | [] | Array of avatar configuration objects (alternative to using slots) |
+| size | String | "medium" | Size of the avatars ("small", "medium", "large") |
+| vertical | Boolean | false | When true, displays avatars in a vertical column instead of horizontal row |
+| themeOverrides | Object | {} | Custom theme overrides for component styling |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Default slot for avatar content |
+| avatar | Slot for customizing avatar appearance. Receives slotProps that can be accessed via :bind parameter |
+| rest | Slot for customizing the appearance of the "+X" overflow indicator. Receives slotProps that can be accessed via :bind parameter |
+
+## Usage Examples
+
+### Basic Usage with Default Slot
+```vue
+<template>
+  <BaseAvatarGroup :max="3" size="small">
+    <BaseAvatar src="/images/avatar1.jpg" />
+    <BaseAvatar src="/images/avatar2.jpg" />
+    <BaseAvatar src="/images/avatar3.jpg" />
+    <BaseAvatar src="/images/avatar4.jpg" />
+    <BaseAvatar src="/images/avatar5.jpg" />
+  </BaseAvatarGroup>
+</template>
+```
+
+### Using Options Array
+```vue
+<template>
+  <BaseAvatarGroup
+    :options="[
+      { src: '/images/avatar1.jpg' },
+      { src: '/images/avatar2.jpg' },
+      { src: '/images/avatar3.jpg' },
+      { text: 'AB' },
+      { text: 'CD' }
+    ]"
+    :max="4"
+    expand-on-hover
+  />
+</template>
+```
+
+### Vertical Layout with Custom Overflow Indicator
+```vue
+<template>
+  <BaseAvatarGroup :max="3" vertical>
+    <BaseAvatar src="/images/avatar1.jpg" />
+    <BaseAvatar src="/images/avatar2.jpg" />
+    <BaseAvatar src="/images/avatar3.jpg" />
+    <BaseAvatar src="/images/avatar4.jpg" />
+    <BaseAvatar src="/images/avatar5.jpg" />
+    
+    <template #rest="{ bind }">
+      <BaseAvatar>
+        <template #icon>
+          <span>+{{ bind.rest }}</span>
+        </template>
+      </BaseAvatar>
+    </template>
+  </BaseAvatarGroup>
+</template>
+```
+
+### With Custom Sizing and Theme Overrides
+```vue
+<template>
+  <BaseAvatarGroup
+    size="large"
+    :max="5"
+    :theme-overrides="{
+      gap: '8px',
+      containerPadding: '4px'
+    }"
+  >
+    <BaseAvatar src="/images/avatar1.jpg" />
+    <BaseAvatar src="/images/avatar2.jpg" />
+    <BaseAvatar src="/images/avatar3.jpg" />
+    <BaseAvatar src="/images/avatar4.jpg" />
+  </BaseAvatarGroup>
+</template>
+```
+
+## Notes
+- This component provides size context to child BaseAvatar components
+- BaseAvatarGroup is a wrapper around Naive UI's n-avatar-group component
+- For consistent appearance, it is recommended to use BaseAvatar components within BaseAvatarGroup
+
+## Related Components
+- BaseAvatar - Individual avatar component
+- BaseWrapper - Provides base functionality for UI components

@@ -1,0 +1,237 @@
+# BaseAlert Component
+
+## Description
+BaseAlert is a versatile component for displaying important messages, notifications, or status information to users. It wraps Naive UI's n-alert component and provides a consistent interface for showing alerts with various styles, icons, and interactive elements.
+
+## Props
+
+### Core Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| type | 'default' \| 'info' \| 'success' \| 'warning' \| 'error' | 'default' | The type/style of the alert |
+| title | String | undefined | Title text displayed at the top of the alert |
+| closable | Boolean | false | Whether the alert can be closed by the user |
+| showIcon | Boolean | true | Whether to display an icon based on the alert type |
+
+### Appearance Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| bordered | Boolean | true | Whether to show a border around the alert |
+| ghost | Boolean | false | Whether to remove the background color and border |
+| themeOverrides | Object | {} | Custom theme overrides for styling the component |
+
+## Events
+
+| Event | Description |
+|-------|-------------|
+| close | Emitted when the close button is clicked (if closable is true) |
+| after-leave | Emitted after the alert's closing animation completes |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| default | Main content of the alert |
+| header | Custom header content (replaces the title prop if provided) |
+| icon | Custom icon content (overrides the default icon based on type) |
+| action | Content for the action area, typically containing buttons |
+
+## Implementation Details
+
+The BaseAlert component is implemented as a wrapper around Naive UI's n-alert component. It adds several features:
+
+1. **Ghost Mode**: When the `ghost` prop is true, the alert has no background or border, and the type is forced to "info" for styling purposes.
+2. **Box Shadow**: Non-ghost alerts have a subtle box shadow for better visual hierarchy.
+3. **Action Area**: The component includes a dedicated action slot for buttons or links, displayed at the end of the content.
+4. **Responsive Width**: The alert body has responsive width handling.
+5. **Custom Styling**: The component supports theme overrides for customizing the appearance.
+
+## Examples
+
+### Basic Alert
+```vue
+<template>
+  <BaseAlert type="info">
+    This is a basic info alert
+  </BaseAlert>
+</template>
+```
+
+### Alert with Title
+```vue
+<template>
+  <BaseAlert 
+    type="success" 
+    title="Success!"
+  >
+    Your operation was completed successfully
+  </BaseAlert>
+</template>
+```
+
+### Closable Warning Alert
+```vue
+<template>
+  <BaseAlert 
+    type="warning" 
+    title="Warning" 
+    closable 
+    @close="handleClose"
+  >
+    This action cannot be undone
+  </BaseAlert>
+</template>
+
+<script setup>
+const handleClose = () => {
+  console.log('Alert closed');
+};
+</script>
+```
+
+### Error Alert with Action Buttons
+```vue
+<template>
+  <BaseAlert type="error" title="Error">
+    Failed to save changes
+    <template #action>
+      <BaseButton size="small" @click="retry">Retry</BaseButton>
+      <BaseButton size="small" @click="cancel">Cancel</BaseButton>
+    </template>
+  </BaseAlert>
+</template>
+
+<script setup>
+const retry = () => {
+  // Retry logic
+};
+
+const cancel = () => {
+  // Cancel logic
+};
+</script>
+```
+
+### Ghost Alert (No Background)
+```vue
+<template>
+  <BaseAlert type="info" ghost>
+    This is a ghost alert with no background
+  </BaseAlert>
+</template>
+```
+
+### Custom Icon
+```vue
+<template>
+  <BaseAlert type="info">
+    <template #icon>
+      <BaseIcon name="custom-icon" />
+    </template>
+    Alert with custom icon
+  </BaseAlert>
+</template>
+```
+
+### Custom Header
+```vue
+<template>
+  <BaseAlert type="info">
+    <template #header>
+      <div class="custom-header">
+        <BaseIcon name="info" />
+        <span>Important Information</span>
+      </div>
+    </template>
+    This alert has a custom header
+  </BaseAlert>
+</template>
+
+<style scoped>
+.custom-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+</style>
+```
+
+## Best Practices
+
+1. **Choose the Right Type**
+   - Use `default` for neutral information
+   - Use `info` for general information or tips
+   - Use `success` for successful operations
+   - Use `warning` for potential issues or cautions
+   - Use `error` for errors or failures
+
+2. **Content Guidelines**
+   - Keep alert messages clear and concise
+   - Include specific details about what happened
+   - Provide actionable next steps when appropriate
+   - Use a friendly, non-technical tone
+
+3. **Visual Considerations**
+   - Use icons to reinforce the message type
+   - Consider making frequently dismissed alerts closable
+   - Use the action slot for related buttons rather than placing them outside the alert
+   - Maintain consistent spacing around alerts
+
+4. **Accessibility**
+   - Ensure sufficient color contrast for all alert types
+   - Don't rely solely on color to communicate the alert type
+   - Use appropriate ARIA attributes for screen readers
+
+## Common Use Cases
+
+1. **Form Validation Errors**
+   ```vue
+   <BaseAlert 
+     v-if="formErrors.length" 
+     type="error" 
+     title="Form Validation Error"
+   >
+     <ul>
+       <li v-for="error in formErrors" :key="error">{{ error }}</li>
+     </ul>
+   </BaseAlert>
+   ```
+
+2. **Success Confirmation**
+   ```vue
+   <BaseAlert 
+     type="success" 
+     closable 
+     @close="hideSuccessMessage"
+   >
+     Your changes have been saved successfully
+   </BaseAlert>
+   ```
+
+3. **System Notification**
+   ```vue
+   <BaseAlert 
+     type="info" 
+     title="System Maintenance"
+   >
+     The system will be unavailable on Sunday from 2-4 AM for scheduled maintenance
+   </BaseAlert>
+   ```
+
+4. **Warning with Actions**
+   ```vue
+   <BaseAlert type="warning" title="Session Expiring">
+     Your session will expire in 5 minutes
+     <template #action>
+       <BaseButton size="small" @click="extendSession">
+         Extend Session
+       </BaseButton>
+     </template>
+   </BaseAlert>
+   ```
+
+## Notes
+- When `ghost` is true, the alert type is forced to "info" for styling purposes
+- The alert body has padding-right of 50px to accommodate the close button
+- Action buttons are displayed with 10px spacing between them
+- Non-ghost alerts have a subtle box shadow for better visual hierarchy
